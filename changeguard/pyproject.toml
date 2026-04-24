@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "changeguard-env"
+version = "0.2.0"
+description = "ChangeGuard OpenEnv package (tenant-aware upgrade commander)"
+readme = "../README.md"
+requires-python = ">=3.10"
+authors = [{ name = "ChangeGuard Team" }]
+dependencies = [
+  "openenv-core>=0.2.0",
+]
+
+[project.scripts]
+server = "changeguard.server.app:main"
+changeguard-server = "changeguard.server.app:main"
+
+[project.entry-points."openenv.environments"]
+changeguard = "changeguard.server.app:create_app"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = [".."]
+include = ["changeguard*"]
+exclude = ["tests*", "tenantsafe*", "training*"]

@@ -235,6 +235,11 @@ def run_local_server(host: str = "127.0.0.1", port: int = 8080, max_concurrent_e
     return actual_host, actual_port
 
 
+def main() -> None:
+    """CLI entrypoint required by OpenEnv multi-mode deployment checks."""
+    run_local_server()
+
+
 def run_local_server_in_thread(host: str = "127.0.0.1", port: int = 0, max_concurrent_envs: Optional[int] = None):
     """Start server in a background thread (useful for tests/demo)."""
     app = create_app(max_concurrent_envs=max_concurrent_envs)
@@ -245,4 +250,4 @@ def run_local_server_in_thread(host: str = "127.0.0.1", port: int = 0, max_concu
 
 
 if __name__ == "__main__":
-    run_local_server()
+    main()

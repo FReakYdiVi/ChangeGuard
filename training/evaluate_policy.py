@@ -44,9 +44,10 @@ def _run_policy_on_pack(
 ) -> Dict[str, Any]:
     pack = SEED_PACKS[seed_pack]
     rows: List[Dict[str, Any]] = []
+    # Reuse a single remote session to avoid exhausting server session slots.
+    env = ChangeGuardToolEnv(client=EnvClient(base_url=base_url))
 
     for item in pack:
-        env = ChangeGuardToolEnv(client=EnvClient(base_url=base_url))
         env.reset(
             difficulty=item["difficulty"],
             seed=item["seed"],

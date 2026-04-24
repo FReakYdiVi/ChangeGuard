@@ -2,6 +2,8 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
+# Build context should be repo root when using:
+# docker build -f changeguard/Dockerfile .
 COPY . /app
 
 RUN pip install --no-cache-dir --upgrade pip
@@ -12,4 +14,4 @@ ENV PORT=7860
 
 EXPOSE 7860
 
-CMD ["python", "-c", "import os; from changeguard.server.app import run_local_server; run_local_server(host='0.0.0.0', port=int(os.getenv('PORT','7860')))"]
+CMD ["python", "-m", "changeguard.server.app"]
