@@ -64,6 +64,51 @@ class TrainConfig:
     seed_pack: str = "smoke"
 
 
+def _noop_reward_func(prompts, completions, **kwargs):
+    """Compatibility reward for TRL versions that require `reward_funcs`.
+
+    In environment-driven GRPO mode, the environment provides the primary reward
+    signal. This fallback keeps trainer initialization valid across TRL releases.
+    """
+    _ = prompts, kwargs
+    return [0.0 for _ in completions]
+
+
+def _build_processing_class(model_name: str):
+    """Build tokenizer/processing class compatible with TRL tool parsing.
+
+    For some Qwen2.5 variants, TRL may fail to infer a response schema from the
+    bundled chat template. In that case, we apply a compatible Qwen tool template
+    and retry schema registration.
+    """
+    transformers_mod = importlib.import_module("transformers")
+    AutoTokenizer = getattr(transformers_mod, "AutoTokenizer")
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+    if getattr(tokenizer, "pad_token", None) is None and getattr(tokenizer, "eos_token", None):
+        tokenizer.pad_token = tokenizer.eos_token
+
+    if getattr(tokenizer, "response_schema", None) is not None:
+        return tokenizer
+
+    chat_utils_mod = importlib.import_module("trl.chat_template_utils")
+    add_response_schema = getattr(chat_utils_mod, "add_response_schema")
+
+    try:
+        return add_response_schema(tokenizer)
+    except Exception as exc:
+        # Qwen2.5 fallback: swap to a known Qwen tools template then retry.
+        if "Qwen/Qwen2.5" not in model_name:
+            raise RuntimeError(
+                f"Failed to prepare response schema for model '{model_name}'."
+            ) from exc
+
+        qwen3_tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen3-0.6B", use_fast=True)
+        if not getattr(qwen3_tokenizer, "chat_template", None):
+            raise RuntimeError("Qwen3 fallback tokenizer has no chat_template.") from exc
+        tokenizer.chat_template = qwen3_tokenizer.chat_template
+        return add_response_schema(tokenizer)
+
+
 def build_environment_factory(config: TrainConfig):
     """Return TRL-compatible environment factory closure."""
 
@@ -188,11 +233,14 @@ def run_grpo_training(config: TrainConfig) -> Dict[str, Any]:
 
     dataset_rows = build_tiny_prompt_dataset(config.prompt_repeats)
     train_dataset = Dataset.from_list(dataset_rows)
+    processing_class = _build_processing_class(config.model_name)
 
     trainer_args = GRPOConfig(
         output_dir=config.output_dir,
         max_steps=config.max_steps,
-        per_device_train_batch_size=1,
+        # GRPO requires >=2 generations, and batch must be divisible by generations.
+        per_device_train_batch_size=2,
+        num_generations=2,
         gradient_accumulation_steps=1,
         logging_steps=1,
         report_to=[],
@@ -200,6 +248,8 @@ def run_grpo_training(config: TrainConfig) -> Dict[str, Any]:
 
     trainer = GRPOTrainer(
         model=config.model_name,
+        processing_class=processing_class,
+        reward_funcs=[_noop_reward_func],
         args=trainer_args,
         train_dataset=train_dataset,
         environment_factory=build_environment_factory(config),
