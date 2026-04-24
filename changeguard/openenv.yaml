@@ -1,0 +1,97 @@
+name: changeguard_tenant_aware_upgrade_v1
+version: 0.2.0
+kind: environment
+
+description: >
+  ChangeGuard Tenant-Aware Upgrade Commander.
+  Simulates staged tenant schema upgrade with hidden compatibility risk,
+  approval gates, and safety-focused reward breakdown.
+
+runtime:
+  app_factory: changeguard.server.app:create_app
+  supports_concurrent_sessions: true
+  max_concurrent_envs_env: CHANGEGUARD_MAX_CONCURRENT_ENVS
+
+api:
+  health_path: /health
+  ready_path: /ready
+  reset_path: /reset
+  step_path: /step
+  state_path: /state
+  summary_path: /summary
+
+actions:
+  - name: inspect_tenant
+    description: Inspect tenant profile/risk context.
+    args:
+      tenant:
+        type: enum
+        values: [A, B, C]
+        required: false
+        default: C
+  - name: inspect_compatibility
+    description: Inspect compatibility report for schema migration.
+    args: {}
+  - name: inspect_logs
+    description: Inspect export/service logs for hidden issues.
+    args: {}
+  - name: canary_upgrade
+    description: Canary upgrade Tenant A first.
+    args:
+      tenant:
+        type: enum
+        values: [A]
+        required: true
+  - name: promote_upgrade
+    description: Promote upgrade to Tenant B or finalize Tenant C.
+    args:
+      tenant:
+        type: enum
+        values: [B, C]
+        required: true
+  - name: enable_compat_mode
+    description: Enable compatibility mode for Tenant C.
+    args:
+      tenant:
+        type: enum
+        values: [C]
+        required: true
+  - name: request_approval
+    description: Request approval gate for Tenant C.
+    args:
+      tenant:
+        type: enum
+        values: [C]
+        required: true
+  - name: defer_tenant
+    description: Defer risky tenant rollout (safe partial completion path).
+    args:
+      tenant:
+        type: enum
+        values: [C]
+        required: false
+        default: C
+  - name: rollback_tenant
+    description: Roll back one tenant or full rollout.
+    args:
+      tenant:
+        type: enum
+        values: [A, B, C]
+        required: false
+
+outputs:
+  step_result:
+    fields:
+      - observation
+      - reward_total
+      - reward_breakdown
+      - verifier_flags
+      - done
+      - truncated
+      - info
+  episode_summary:
+    fields:
+      - final_verdict
+      - final_reward
+      - stats
+      - action_trace
