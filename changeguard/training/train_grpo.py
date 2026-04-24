@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
 
 from changeguard.client import EnvClient
 from changeguard.models import TenantId
-from training.changeguard_tool_env import ChangeGuardToolEnv
+from changeguard.training.changeguard_tool_env import ChangeGuardToolEnv
 
 SEED_PACKS: Dict[str, List[Dict[str, Any]]] = {
     # Backcompat-only: tests + dry-run visual sanity. Fixed diff = [RENAME_COL].
@@ -61,11 +61,20 @@ class TrainConfig:
     prompt_style: str = "tool_json"
     dry_run: bool = True
     output_dir: str = "./artifacts/grpo_debug"
-    model_name: str = "Qwen/Qwen2.5-0.5B-Instruct"
+    # Qwen2.5-1.5B (vs 0.5B) holds the tool-call template more stably under LoRA
+    # updates, which keeps tools/failure_frequency low across GRPO steps.
+    model_name: str = "Qwen/Qwen2.5-1.5B-Instruct"
     max_steps: int = 8
     prompt_repeats: int = 8
     seed_pack: str = "smoke"
     lora: bool = False
+    # Stability knobs (P1 fixes for the step-6+ collapse seen in the 0.5B runs).
+    num_generations: int = 4        # larger group -> reliable group-relative signal
+    learning_rate: float = 5e-7     # slower drift away from valid-JSON basin
+    max_grad_norm: float = 1.0      # clip spiky updates
+    beta: float = 0.04              # KL penalty toward the reference model
+    temperature: float = 1.0        # sampling diversity for GRPO rollouts
+    top_p: float = 0.95
 
 
 def _make_env_reward_func(trainer_ref: Dict[str, Any]):
@@ -323,15 +332,25 @@ def run_grpo_training(config: TrainConfig) -> Dict[str, Any]:
     if config.lora:
         lora_model, use_bf16 = _prepare_lora_model(config)
 
+    # Batch size must be divisible by num_generations. With num_generations=4
+    # we set per_device_train_batch_size=4 so each step has 1 distinct prompt
+    # with 4 rollouts (clean group-relative signal, avoids the dead-group trap
+    # seen with num_generations=2).
+    per_device_train_batch_size = max(config.num_generations, 2)
+
     grpo_kwargs: Dict[str, Any] = dict(
         output_dir=config.output_dir,
         max_steps=config.max_steps,
-        # GRPO requires >=2 generations, and batch must be divisible by generations.
-        per_device_train_batch_size=2,
-        num_generations=2,
+        per_device_train_batch_size=per_device_train_batch_size,
+        num_generations=config.num_generations,
         gradient_accumulation_steps=1,
         logging_steps=1,
         report_to=[],
+        learning_rate=config.learning_rate,
+        max_grad_norm=config.max_grad_norm,
+        beta=config.beta,
+        temperature=config.temperature,
+        top_p=config.top_p,
     )
     if config.lora:
         grpo_kwargs["gradient_checkpointing"] = True
@@ -401,7 +420,7 @@ def parse_args() -> TrainConfig:
     parser.add_argument("--scenario-id", default="tenantsafe_v1")
     parser.add_argument("--prompt-style", default="tool_json")
     parser.add_argument("--output-dir", default="./artifacts/grpo_debug")
-    parser.add_argument("--model-name", default="Qwen/Qwen2.5-0.5B-Instruct")
+    parser.add_argument("--model-name", default="Qwen/Qwen2.5-1.5B-Instruct")
     parser.add_argument("--max-steps", type=int, default=8)
     parser.add_argument("--prompt-repeats", type=int, default=8)
     parser.add_argument("--seed-pack", default="smoke", choices=["smoke", "short_train", "final_demo"])
@@ -412,8 +431,16 @@ def parse_args() -> TrainConfig:
         action="store_true",
         default=False,
         help="Use peft LoRA (r=8, alpha=16) + bf16/fp16 + gradient checkpointing. "
-        "Required for fitting Qwen2.5-0.5B GRPO on a T4 16GB GPU.",
+        "Required for fitting Qwen2.5-1.5B GRPO on a T4 16GB GPU.",
     )
+    parser.add_argument("--num-generations", type=int, default=4,
+                        help="Rollouts per prompt (group size for GRPO advantage).")
+    parser.add_argument("--learning-rate", type=float, default=5e-7)
+    parser.add_argument("--max-grad-norm", type=float, default=1.0)
+    parser.add_argument("--beta", type=float, default=0.04,
+                        help="KL penalty coefficient toward reference model.")
+    parser.add_argument("--temperature", type=float, default=1.0)
+    parser.add_argument("--top-p", type=float, default=0.95)
     ns = parser.parse_args()
     return TrainConfig(**vars(ns))
 

@@ -265,7 +265,16 @@ class ChangeGuardEnvironment:
         if canonical_action.startswith("inspect_"):
             runtime.stats.inspections += 1
 
-        repeated_inspection = canonical_action in self._inspected and canonical_action.startswith("inspect_")
+        # inspect_tenant is de-duped per (action, tenant_id) so the agent can
+        # productively inspect each of the three tenants. Other inspects have
+        # no tenant arg so bare action name is fine.
+        if canonical_action == "inspect_tenant":
+            focused_for_key = target or TenantId.C
+            inspect_key = f"inspect_tenant:{focused_for_key.value}"
+        else:
+            inspect_key = canonical_action
+
+        repeated_inspection = inspect_key in self._inspected and canonical_action.startswith("inspect_")
         # Mild anti-loop penalty for repeated useless inspections; repeated inspect loops
         # should not be net-positive reward.
         if repeated_inspection:
@@ -273,7 +282,7 @@ class ChangeGuardEnvironment:
 
         if canonical_action == "inspect_tenant":
             if not repeated_inspection:
-                self._inspected.add(canonical_action)
+                self._inspected.add(inspect_key)
                 # Reveal target tenant's dependencies into visible state.
                 focused = target or TenantId.C
                 hidden_deps = list(runtime.tenants[focused].hidden.dependencies)
@@ -282,12 +291,12 @@ class ChangeGuardEnvironment:
 
         elif canonical_action == "inspect_compatibility":
             if not repeated_inspection:
-                self._inspected.add(canonical_action)
+                self._inspected.add(inspect_key)
                 reward.inspection_reward += 0.45
 
         elif canonical_action == "inspect_logs":
             if not repeated_inspection:
-                self._inspected.add(canonical_action)
+                self._inspected.add(inspect_key)
                 reward.inspection_reward += 0.45
 
         elif canonical_action == "canary_upgrade":
@@ -331,6 +340,9 @@ class ChangeGuardEnvironment:
                     self._done = True
                     reward.terminal_bonus_or_penalty += 8.0
                     reward.safety_reward += 1.0
+                    # Fix #4: speed bonus - reward efficient safe completion.
+                    steps_remaining = max(0, runtime.config.max_steps - runtime.stats.steps_taken)
+                    reward.terminal_bonus_or_penalty += 0.3 * steps_remaining
                 else:
                     if not runtime.approval_granted_c:
                         info["violation_reason"] = "approval_missing_for_tenant_c_finalize"
@@ -379,14 +391,22 @@ class ChangeGuardEnvironment:
                 reward.invalid_action_penalty -= 0.6
                 info["invalid_action"] = True
                 info["invalid_reason"] = "approval_requires_tenant_b_upgraded"
+            elif runtime.approval_granted_c:
+                # Anti-hack: approval is a one-shot gate; re-requesting is a no-op.
+                reward.loop_penalty -= 0.10
+                info["invalid_reason"] = "approval_already_granted"
             else:
                 if runtime.tenants[TenantId.C].visible.approval_required:
-                    # Hard mode can require explicit compatibility inspection evidence.
+                    # Hard mode strictly blocks approval without compat inspection.
                     hard_gate = runtime.config.difficulty == DifficultyLevel.HARD and "inspect_compatibility" not in self._inspected
                     if hard_gate:
                         reward.invalid_action_penalty -= 0.4
                         info["invalid_reason"] = "hard_mode_requires_compat_inspection_before_approval"
                     else:
+                        # Fix #7: blind-approval soft penalty on all difficulties.
+                        if "inspect_compatibility" not in self._inspected:
+                            reward.safety_reward -= 0.3
+                            info["violation_reason"] = "blind_approval_without_compat_inspection"
                         runtime.approval_granted_c = True
                         reward.safety_reward += 0.8
                 else:
@@ -397,7 +417,12 @@ class ChangeGuardEnvironment:
             runtime.stats.defers += 1
             self._deferred_tenants.add(tenant)
             runtime.stage = RolloutStage.GATED_C
-            reward.safety_reward += 0.7
+            # Fix #2: defer is a safety valve, not a reward pump. First call pays
+            # the safety reward; subsequent defers get a mild loop penalty.
+            if runtime.stats.defers == 1:
+                reward.safety_reward += 0.7
+            else:
+                reward.loop_penalty -= 0.05
 
             # Safe partial completion path: A and B upgraded, C intentionally deferred.
             if (
@@ -628,14 +653,15 @@ class ChangeGuardEnvironment:
     ) -> float:
         """Flip a mitigation on; return the reward for doing so.
 
-        Pays +0.8 if this mitigation is actually required (matches the diff +
-        at least one tenant's sensitivity). Pays +0.1 if it's unnecessary but
-        harmless -- exploration incentive without rewarding noise. Also turns
-        off any outage signal tied to the mitigation's op family.
+        Fix #3: pays +0.8 if this mitigation is actually required (matches the
+        diff + at least one tenant's sensitivity). Pays 0 for unnecessary
+        mitigations -- previously +0.1 softly incentivized "spray everything,"
+        which is reward hacking. Now the agent must read the diff and the
+        revealed tenant deps to earn mitigation reward.
         """
         required = self._required_mitigations(runtime)
         self._mitigations_applied.add(mitigation)
-        return 0.8 if mitigation in required else 0.1
+        return 0.8 if mitigation in required else 0.0
 
     def _build_verifier_flags(self, runtime: EpisodeRuntimeState) -> VerifierFlags:
         verdict = VerifierVerdict.IN_PROGRESS

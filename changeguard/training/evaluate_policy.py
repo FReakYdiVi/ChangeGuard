@@ -11,8 +11,8 @@ from typing import Any, Callable, Dict, List
 
 from changeguard.client import EnvClient
 from changeguard.models import TenantId
-from training.changeguard_tool_env import ChangeGuardToolEnv
-from training.train_grpo import SEED_PACKS
+from changeguard.training.changeguard_tool_env import ChangeGuardToolEnv
+from changeguard.training.train_grpo import SEED_PACKS
 
 PolicyFn = Callable[[ChangeGuardToolEnv], None]
 

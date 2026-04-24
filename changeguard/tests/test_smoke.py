@@ -4,7 +4,7 @@ from changeguard import Action, ActionType, Observation, RolloutStage
 from changeguard.client import ChangeGuardClient
 from changeguard.server.app import ChangeGuardServerApp, create_app
 from changeguard.server.changeguard_environment import ChangeGuardEnvironment
-from training.changeguard_tool_env import ChangeGuardToolEnv
+from changeguard.training.changeguard_tool_env import ChangeGuardToolEnv
 
 
 class SmokeImportsTests(unittest.TestCase):

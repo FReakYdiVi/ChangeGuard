@@ -26,22 +26,21 @@ training = [
 [project.scripts]
 server = "changeguard.server.app:main"
 changeguard-server = "changeguard.server.app:main"
-changeguard-train = "training.train_grpo:main"
-changeguard-eval = "training.evaluate_policy:main"
+changeguard-train = "changeguard.training.train_grpo:main"
+changeguard-eval = "changeguard.training.evaluate_policy:main"
 
 [project.entry-points."openenv.environments"]
 changeguard = "changeguard.server.app:create_app"
 
 [tool.setuptools]
+# Flat layout: pyproject.toml AND __init__.py both sit in this dir, so the
+# project dir IS the `changeguard` package. Enumerate packages explicitly and
+# map the root package to "." — subpackages inherit via path convention.
 include-package-data = true
+packages = ["changeguard", "changeguard.server", "changeguard.training"]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["changeguard*", "training*"]
-exclude = ["tests*", "notebooks*", "docs*", "tenantsafe*"]
-
-[tool.setuptools.package-data]
-changeguard = ["openenv.yaml"]
+[tool.setuptools.package-dir]
+"changeguard" = "."
 
 [tool.uv]
 managed = true

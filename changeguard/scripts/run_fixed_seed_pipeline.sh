@@ -17,19 +17,19 @@ SERVER_PID=$!
 sleep 1
 
 echo "[2/5] Baseline evaluation on fixed seeds (${SEED_PACK})"
-python -m training.evaluate_policy --base-url "$BASE_URL" --seed-pack "$SEED_PACK" --candidate baseline
+python -m changeguard.training.evaluate_policy --base-url "$BASE_URL" --seed-pack "$SEED_PACK" --candidate baseline
 
 echo "[3/5] Short training run (dry-run by default)"
-python -m training.train_grpo --base-url "$BASE_URL" --seed-pack short_train --dry-run
+python -m changeguard.training.train_grpo --base-url "$BASE_URL" --seed-pack short_train --dry-run
 
 echo "[4/5] Optional real GRPO run (set REAL_TRAIN=1 and install trl,datasets)"
 if [[ "${REAL_TRAIN:-0}" == "1" ]]; then
-  python -m training.train_grpo --base-url "$BASE_URL" --seed-pack short_train --no-dry-run --max-steps 8 --prompt-repeats 8
+  python -m changeguard.training.train_grpo --base-url "$BASE_URL" --seed-pack short_train --no-dry-run --max-steps 8 --prompt-repeats 8
 else
   echo "REAL_TRAIN not enabled; skipping --no-dry-run"
 fi
 
 echo "[5/5] Candidate evaluation on same fixed seeds (${SEED_PACK})"
-python -m training.evaluate_policy --base-url "$BASE_URL" --seed-pack "$SEED_PACK" --candidate trained_like
+python -m changeguard.training.evaluate_policy --base-url "$BASE_URL" --seed-pack "$SEED_PACK" --candidate trained_like
 
 echo "Done."
