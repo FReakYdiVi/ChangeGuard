@@ -11,21 +11,26 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from changeguard.internal_state import EpisodeRuntimeState, TenantRuntimeState
 from changeguard.models import (
     Action,
     ActionType,
+    DependencyProfile,
     DifficultyLevel,
+    DiffOpKind,
     EpisodeConfig,
     EpisodeStats,
     EpisodeSummary,
+    MITIGATION_FOR_OP,
+    MigrationMitigation,
     Observation,
     RewardBreakdown,
     RiskHintLevel,
     RiskTier,
     RolloutStage,
+    SENSITIVE_DEP_FOR_OP,
     SchemaVersion,
     SignalLevel,
     StepResult,
@@ -56,6 +61,10 @@ class ChangeGuardEnvironment:
     _last_action: Optional[str] = None
     _scenario_id: str = "default"
     _prompt_style: Optional[str] = None
+    # Schema diff present in V2 (visible to the agent from step 0).
+    _schema_v2_diff: List[DiffOpKind] = field(default_factory=list)
+    # Global mitigations the agent has enabled for this migration.
+    _mitigations_applied: Set[MigrationMitigation] = field(default_factory=set)
 
     VALID_ACTIONS = {
         "inspect_tenant",
@@ -64,6 +73,9 @@ class ChangeGuardEnvironment:
         "canary_upgrade",
         "promote_upgrade",
         "enable_compat_mode",
+        "apply_backfill",
+        "apply_announce_deprecation",
+        "apply_dual_write",
         "request_approval",
         "defer_tenant",
         "rollback_tenant",
@@ -77,9 +89,19 @@ class ChangeGuardEnvironment:
         ActionType.EXPAND_ROLLOUT_TENANT_B.value: "promote_upgrade",
         ActionType.PAUSE_ROLLOUT.value: "defer_tenant",
         ActionType.ENABLE_COMPAT_MODE_TENANT_C.value: "enable_compat_mode",
+        ActionType.APPLY_BACKFILL.value: "apply_backfill",
+        ActionType.APPLY_ANNOUNCE_DEPRECATION.value: "apply_announce_deprecation",
+        ActionType.APPLY_DUAL_WRITE.value: "apply_dual_write",
         ActionType.REQUEST_APPROVAL_TENANT_C.value: "request_approval",
         ActionType.FINALIZE_UPGRADE.value: "promote_upgrade",
         ActionType.ROLLBACK_UPGRADE.value: "rollback_tenant",
+    }
+
+    MITIGATION_ACTION_MAP = {
+        "enable_compat_mode": MigrationMitigation.COMPAT_MODE,
+        "apply_backfill": MigrationMitigation.BACKFILL,
+        "apply_announce_deprecation": MigrationMitigation.ANNOUNCE_DEPRECATION,
+        "apply_dual_write": MigrationMitigation.DUAL_WRITE,
     }
 
     def reset(
@@ -102,6 +124,7 @@ class ChangeGuardEnvironment:
         self._outage = False
         self._integrity_ok = True
         self._last_action = None
+        self._mitigations_applied = set()
 
         scenario = self._scenario_profile(level=level, scenario_id=self._scenario_id)
         b_hidden_prob = scenario["b_hidden_prob"]
@@ -112,26 +135,36 @@ class ChangeGuardEnvironment:
         lower = min(r_start, upper)
         self._rollback_deadline_step = self._rng.randint(lower, upper)
 
+        # Procedural schema diff + tenant dependency sampling.
+        self._schema_v2_diff = self._sample_diff_ops(scenario)
+        tenant_deps = self._sample_tenant_deps(scenario)
+
         config = EpisodeConfig(seed=seed, difficulty=level, max_steps=min(self.max_steps, 12), deterministic=True)
         tenants: Dict[TenantId, TenantRuntimeState] = {
             TenantId.A: TenantRuntimeState(
                 visible=TenantVisibleState(TenantId.A, RiskTier.LOW, approval_required=False),
-                hidden=TenantHiddenState(TenantId.A, has_legacy_export_dependency=False),
+                hidden=TenantHiddenState(
+                    TenantId.A,
+                    has_legacy_export_dependency=DependencyProfile.LEGACY_EXPORT in tenant_deps[TenantId.A],
+                    dependencies=list(tenant_deps[TenantId.A]),
+                ),
             ),
             TenantId.B: TenantRuntimeState(
                 visible=TenantVisibleState(TenantId.B, RiskTier.MEDIUM, approval_required=False),
                 hidden=TenantHiddenState(
                     TenantId.B,
-                    has_legacy_export_dependency=False,
+                    has_legacy_export_dependency=DependencyProfile.LEGACY_EXPORT in tenant_deps[TenantId.B],
                     export_job_health_internal=(SignalLevel.WARNING if self._b_has_hidden_risk else SignalLevel.HEALTHY),
+                    dependencies=list(tenant_deps[TenantId.B]),
                 ),
             ),
             TenantId.C: TenantRuntimeState(
                 visible=TenantVisibleState(TenantId.C, RiskTier.HIGH, approval_required=True),
                 hidden=TenantHiddenState(
                     TenantId.C,
-                    has_legacy_export_dependency=True,
+                    has_legacy_export_dependency=DependencyProfile.LEGACY_EXPORT in tenant_deps[TenantId.C],
                     export_job_health_internal=SignalLevel.FAILING,
+                    dependencies=list(tenant_deps[TenantId.C]),
                 ),
             ),
         }
@@ -139,6 +172,53 @@ class ChangeGuardEnvironment:
         self._runtime = EpisodeRuntimeState(config=config, stage=RolloutStage.PLAN, tenants=tenants, stats=EpisodeStats())
         self._summary = EpisodeSummary(config=config)
         return self._build_observation()
+
+    def _sample_diff_ops(self, scenario: Dict[str, object]) -> List[DiffOpKind]:
+        """Build the V2 schema diff based on the scenario profile.
+
+        Backcompat scenarios (easy_stable / default) return [RENAME_COL] so legacy
+        tests stay valid. Procedural scenarios draw 1-3 ops from the full set.
+        """
+        preset = scenario.get("schema_diff_preset")
+        if preset is not None:
+            return [op for op in preset]
+        n_ops_range = scenario.get("n_ops_range", (1, 2))
+        pool: List[DiffOpKind] = list(DiffOpKind)
+        n = self._rng.randint(*n_ops_range)
+        # Sample without replacement so ops are distinct within an episode.
+        return self._rng.sample(pool, k=min(n, len(pool)))
+
+    def _sample_tenant_deps(
+        self, scenario: Dict[str, object]
+    ) -> Dict[TenantId, Set[DependencyProfile]]:
+        """Assign dependency profiles to tenants based on scenario profile.
+
+        Backcompat scenarios keep C with legacy_export only (matching the old
+        env). Procedural scenarios randomly hand out 0-2 deps per tenant but
+        guarantee C gets at least one dep so the approval gate is meaningful.
+        """
+        preset = scenario.get("tenant_deps_preset")
+        if preset is not None:
+            return {tid: set(deps) for tid, deps in preset.items()}
+
+        max_deps_per_tenant = scenario.get("max_deps_per_tenant", 2)
+        pool: List[DependencyProfile] = list(DependencyProfile)
+        result: Dict[TenantId, Set[DependencyProfile]] = {
+            TenantId.A: set(),
+            TenantId.B: set(),
+            TenantId.C: set(),
+        }
+        # Guarantee C has at least one dep relevant to the sampled diff (so the
+        # high-risk tenant always forces at least one mitigation decision).
+        relevant_for_diff = {SENSITIVE_DEP_FOR_OP[op] for op in self._schema_v2_diff if op in SENSITIVE_DEP_FOR_OP}
+        if relevant_for_diff:
+            result[TenantId.C].add(self._rng.choice(list(relevant_for_diff)))
+        # Fill extra deps for each tenant up to max_deps_per_tenant.
+        for tid in (TenantId.A, TenantId.B, TenantId.C):
+            k = self._rng.randint(0, max_deps_per_tenant)
+            for dep in self._rng.sample(pool, k=min(k, len(pool))):
+                result[tid].add(dep)
+        return result
 
     @property
     def state(self) -> Observation:
@@ -194,6 +274,10 @@ class ChangeGuardEnvironment:
         if canonical_action == "inspect_tenant":
             if not repeated_inspection:
                 self._inspected.add(canonical_action)
+                # Reveal target tenant's dependencies into visible state.
+                focused = target or TenantId.C
+                hidden_deps = list(runtime.tenants[focused].hidden.dependencies)
+                runtime.tenants[focused].visible.dependencies_revealed = hidden_deps
                 reward.inspection_reward += 0.35
 
         elif canonical_action == "inspect_compatibility":
@@ -271,12 +355,20 @@ class ChangeGuardEnvironment:
                 info["invalid_reason"] = "compat_mode_only_for_tenant_c"
             else:
                 c_tenant = runtime.tenants[TenantId.C].visible
-                if c_tenant.compat_mode_enabled:
+                mitigation_reward = self._apply_mitigation(MigrationMitigation.COMPAT_MODE, runtime)
+                if c_tenant.compat_mode_enabled and MigrationMitigation.COMPAT_MODE in self._mitigations_applied:
                     reward.loop_penalty -= 0.10
                 else:
                     c_tenant.compat_mode_enabled = True
                     runtime.stage = RolloutStage.GATED_C
-                    reward.safety_reward += 0.9
+                    reward.safety_reward += mitigation_reward
+
+        elif canonical_action in ("apply_backfill", "apply_announce_deprecation", "apply_dual_write"):
+            mitigation = self.MITIGATION_ACTION_MAP[canonical_action]
+            if mitigation in self._mitigations_applied:
+                reward.loop_penalty -= 0.10
+            else:
+                reward.safety_reward += self._apply_mitigation(mitigation, runtime)
 
         elif canonical_action == "request_approval":
             if target not in (None, TenantId.C):
@@ -407,27 +499,66 @@ class ChangeGuardEnvironment:
             "tenant_ids": sorted([tenant_id.value for tenant_id in runtime.tenants.keys()]),
             "c_requires_approval": runtime.tenants[TenantId.C].visible.approval_required,
             "scenario_id": self._scenario_id,
+            "schema_v2_diff": tuple(op.value for op in self._schema_v2_diff),
+            "tenant_deps": tuple(
+                (tid.value, tuple(sorted(d.value for d in runtime.tenants[tid].hidden.dependencies)))
+                for tid in (TenantId.A, TenantId.B, TenantId.C)
+            ),
         }
 
     def _scenario_profile(self, *, level: DifficultyLevel, scenario_id: str) -> Dict[str, object]:
-        """Scenario generator for curriculum variants under the same core task."""
+        """Scenario generator for curriculum variants under the same core task.
+
+        Backcompat scenarios (`easy_stable`, `default`, `medium_mixed`,
+        `hard_fragile`) use fixed presets so legacy tests keep passing.
+        Procedural scenarios (`procedural_easy/medium/hard`) sample diff ops
+        and tenant dependencies per episode for generalization training.
+        """
         base = {
             DifficultyLevel.EASY: {"b_hidden_prob": 0.10, "rollback_range": (10, 12)},
             DifficultyLevel.MEDIUM: {"b_hidden_prob": 0.20, "rollback_range": (9, 11)},
             DifficultyLevel.HARD: {"b_hidden_prob": 0.30, "rollback_range": (8, 10)},
         }[level]
 
+        # Backcompat preset: exactly RENAME_COL + C has legacy_export.
+        backcompat_diff = [DiffOpKind.RENAME_COL]
+        backcompat_deps: Dict[TenantId, Set[DependencyProfile]] = {
+            TenantId.A: set(),
+            TenantId.B: set(),
+            TenantId.C: {DependencyProfile.LEGACY_EXPORT},
+        }
+        backcompat = {
+            "schema_diff_preset": backcompat_diff,
+            "tenant_deps_preset": backcompat_deps,
+        }
+
         overrides = {
-            # Easy: high chance of non-zero rewards and recoverable windows.
-            "easy_stable": {"b_hidden_prob": 0.0, "rollback_range": (11, 12)},
-            # Medium: clear room for policy improvement.
-            "medium_mixed": {"b_hidden_prob": 0.25, "rollback_range": (9, 10)},
-            # Hard: demo-worthy, tighter rollback windows and more hidden risk.
-            "hard_fragile": {"b_hidden_prob": 0.45, "rollback_range": (8, 9)},
-            "default": {},
+            "easy_stable": {"b_hidden_prob": 0.0, "rollback_range": (11, 12), **backcompat},
+            "medium_mixed": {"b_hidden_prob": 0.25, "rollback_range": (9, 10), **backcompat},
+            "hard_fragile": {"b_hidden_prob": 0.45, "rollback_range": (8, 9), **backcompat},
+            "default": {**backcompat},
+            # Procedural scenarios: no presets -> random sampling per episode.
+            "procedural_easy": {
+                "b_hidden_prob": 0.05,
+                "rollback_range": (11, 12),
+                "n_ops_range": (1, 2),
+                "max_deps_per_tenant": 1,
+            },
+            "procedural_medium": {
+                "b_hidden_prob": 0.20,
+                "rollback_range": (9, 11),
+                "n_ops_range": (2, 3),
+                "max_deps_per_tenant": 2,
+            },
+            "procedural_hard": {
+                "b_hidden_prob": 0.40,
+                "rollback_range": (8, 10),
+                "n_ops_range": (2, 3),
+                "max_deps_per_tenant": 2,
+            },
         }
         merged = dict(base)
-        merged.update(overrides.get(scenario_id, {}))
+        merged.update(overrides.get(scenario_id, backcompat))
         return merged
 
     def _action_type_for_canonical(self, canonical_action: str, target: Optional[TenantId]) -> ActionType:
@@ -446,6 +577,12 @@ class ChangeGuardEnvironment:
             return ActionType.EXPAND_ROLLOUT_TENANT_B
         if canonical_action == "enable_compat_mode":
             return ActionType.ENABLE_COMPAT_MODE_TENANT_C
+        if canonical_action == "apply_backfill":
+            return ActionType.APPLY_BACKFILL
+        if canonical_action == "apply_announce_deprecation":
+            return ActionType.APPLY_ANNOUNCE_DEPRECATION
+        if canonical_action == "apply_dual_write":
+            return ActionType.APPLY_DUAL_WRITE
         if canonical_action == "request_approval":
             return ActionType.REQUEST_APPROVAL_TENANT_C
         if canonical_action == "defer_tenant":
@@ -461,12 +598,44 @@ class ChangeGuardEnvironment:
         return TenantId.C
 
     def _can_safely_finalize_c(self, runtime: EpisodeRuntimeState) -> bool:
-        c_vis = runtime.tenants[TenantId.C].visible
         a_ready = runtime.tenants[TenantId.A].visible.schema_version == SchemaVersion.V2
         b_ready = runtime.tenants[TenantId.B].visible.schema_version == SchemaVersion.V2
         approval_ok = runtime.approval_granted_c
-        compat_ok = c_vis.compat_mode_enabled
-        return a_ready and b_ready and approval_ok and compat_ok
+        required = self._required_mitigations(runtime)
+        mitigations_ok = required.issubset(self._mitigations_applied)
+        return a_ready and b_ready and approval_ok and mitigations_ok
+
+    def _required_mitigations(self, runtime: EpisodeRuntimeState) -> Set[MigrationMitigation]:
+        """Mitigations the migration actually needs given diff + tenant deps.
+
+        A mitigation is required iff the diff contains the matching op AND at
+        least one tenant has the sensitive dependency for that op.
+        """
+        required: Set[MigrationMitigation] = set()
+        for op in self._schema_v2_diff:
+            dep = SENSITIVE_DEP_FOR_OP.get(op)
+            if dep is None:
+                continue
+            sensitive = any(
+                dep in runtime.tenants[tid].hidden.dependencies for tid in runtime.tenants
+            )
+            if sensitive and op in MITIGATION_FOR_OP:
+                required.add(MITIGATION_FOR_OP[op])
+        return required
+
+    def _apply_mitigation(
+        self, mitigation: MigrationMitigation, runtime: EpisodeRuntimeState
+    ) -> float:
+        """Flip a mitigation on; return the reward for doing so.
+
+        Pays +0.8 if this mitigation is actually required (matches the diff +
+        at least one tenant's sensitivity). Pays +0.1 if it's unnecessary but
+        harmless -- exploration incentive without rewarding noise. Also turns
+        off any outage signal tied to the mitigation's op family.
+        """
+        required = self._required_mitigations(runtime)
+        self._mitigations_applied.add(mitigation)
+        return 0.8 if mitigation in required else 0.1
 
     def _build_verifier_flags(self, runtime: EpisodeRuntimeState) -> VerifierFlags:
         verdict = VerifierVerdict.IN_PROGRESS
@@ -555,20 +724,35 @@ class ChangeGuardEnvironment:
                 ActionType.CANARY_ROLLOUT_TENANT_A,
                 ActionType.EXPAND_ROLLOUT_TENANT_B,
                 ActionType.ENABLE_COMPAT_MODE_TENANT_C,
+                ActionType.APPLY_BACKFILL,
+                ActionType.APPLY_ANNOUNCE_DEPRECATION,
+                ActionType.APPLY_DUAL_WRITE,
                 ActionType.REQUEST_APPROVAL_TENANT_C,
                 ActionType.PAUSE_ROLLOUT,
                 ActionType.ROLLBACK_UPGRADE,
                 ActionType.FINALIZE_UPGRADE,
             ],
             summary_text=summary,
+            schema_v2_diff=list(self._schema_v2_diff),
+            mitigations_applied=sorted(self._mitigations_applied, key=lambda m: m.value),
         )
 
     def _summary_text(self, runtime: EpisodeRuntimeState, risk_hint: RiskHintLevel) -> str:
+        diff_str = ",".join(op.value for op in self._schema_v2_diff) or "none"
+        mit_str = ",".join(sorted(m.value for m in self._mitigations_applied)) or "none"
+        deps_parts = []
+        for tid in (TenantId.A, TenantId.B, TenantId.C):
+            rev = runtime.tenants[tid].visible.dependencies_revealed
+            if rev:
+                deps_parts.append(f"{tid.value}deps=[{','.join(d.value for d in rev)}]")
+        deps_str = " ".join(deps_parts) if deps_parts else "deps=unknown"
         return (
-            f"Stage={runtime.stage.value}; A={runtime.tenants[TenantId.A].visible.schema_version.value}; "
+            f"Stage={runtime.stage.value}; "
+            f"A={runtime.tenants[TenantId.A].visible.schema_version.value}; "
             f"B={runtime.tenants[TenantId.B].visible.schema_version.value}; "
             f"C={runtime.tenants[TenantId.C].visible.schema_version.value}; "
-            f"approval_c={runtime.approval_granted_c}; risk={risk_hint.value}."
+            f"approval_c={runtime.approval_granted_c}; risk={risk_hint.value}; "
+            f"diff=[{diff_str}]; mitigations=[{mit_str}]; {deps_str}."
         )
 
     def _record_summary(self, runtime: EpisodeRuntimeState, verifier: VerifierFlags) -> None:

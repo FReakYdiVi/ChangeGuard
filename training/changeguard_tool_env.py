@@ -47,7 +47,9 @@ class ChangeGuardToolEnv:
         seed: Optional[int] = None,
         scenario_id: Optional[str] = None,
         prompt_style: Optional[str] = None,
-    ) -> Observation:
+        prompt: Optional[Any] = None,
+        **_trl_kwargs: Any,
+    ) -> Any:
         """Reset the remote environment session.
 
         Args:
@@ -81,9 +83,14 @@ class ChangeGuardToolEnv:
         self.episode_summary = None
         self.violation_flags = {}
         self.episode_metrics = {}
+        # TRL's environment_factory API calls reset(prompt=...) and expects a
+        # string (appended to the last prompt message) or None. Non-TRL callers
+        # get the typed Observation object.
+        if prompt is not None:
+            return self.current_observation.summary_text
         return self.current_observation
 
-    def available_tools(self) -> List[Dict[str, Any]]:
+    def _available_tools(self) -> List[Dict[str, Any]]:
         """Return the public tool catalog exposed to trainer/model."""
         return [
             {"name": "inspect_tenant", "args": {"tenant": "TenantId"}},
@@ -92,20 +99,24 @@ class ChangeGuardToolEnv:
             {"name": "canary_upgrade", "args": {"tenant": "TenantId=A"}},
             {"name": "promote_upgrade", "args": {"tenant": "TenantId(B|C)"}},
             {"name": "enable_compat_mode", "args": {"tenant": "TenantId=C"}},
+            {"name": "apply_backfill", "args": {}},
+            {"name": "apply_announce_deprecation", "args": {}},
+            {"name": "apply_dual_write", "args": {}},
             {"name": "request_approval", "args": {"tenant": "TenantId=C"}},
             {"name": "defer_tenant", "args": {"tenant": "TenantId=C"}},
             {"name": "rollback_tenant", "args": {"tenant": "Optional[TenantId]"}},
         ]
 
-    def inspect_tenant(self, tenant: TenantId = TenantId.C) -> StepResult:
+    def inspect_tenant(self, tenant: Any = TenantId.C) -> StepResult:
         """Inspect tenant profile/risk metadata.
 
         Args:
-            tenant: Tenant identifier to focus inspection context.
+            tenant: Tenant identifier (str like "A" or TenantId enum).
 
         Returns:
             StepResult with updated observation and reward breakdown.
         """
+        tenant = _tenant_arg(tenant)
         self._ensure_active("inspect_tenant")
         return self._apply_action(ActionType.INSPECT_TENANT_PROFILE, tenant)
 
@@ -133,11 +144,11 @@ class ChangeGuardToolEnv:
         self._ensure_active("inspect_logs")
         return self._apply_action(ActionType.INSPECT_EXPORT_JOB_STATUS)
 
-    def canary_upgrade(self, tenant: TenantId = TenantId.A) -> StepResult:
+    def canary_upgrade(self, tenant: Any = TenantId.A) -> StepResult:
         """Canary upgrade the low-risk tenant first.
 
         Args:
-            tenant: Tenant to canary (must be Tenant A in v1).
+            tenant: Tenant to canary (str "A" or TenantId.A). Only A allowed in v1.
 
         Returns:
             StepResult after canary attempt.
@@ -145,6 +156,7 @@ class ChangeGuardToolEnv:
         Raises:
             ValueError: If called on unsupported tenant or wrong stage.
         """
+        tenant = _tenant_arg(tenant)
         self._ensure_active("canary_upgrade")
         if tenant != TenantId.A:
             raise ValueError("canary_upgrade only supports TenantId.A in v1.")
@@ -154,11 +166,11 @@ class ChangeGuardToolEnv:
         )
         return self._apply_action(ActionType.CANARY_ROLLOUT_TENANT_A, tenant)
 
-    def promote_upgrade(self, tenant: TenantId) -> StepResult:
+    def promote_upgrade(self, tenant: Any) -> StepResult:
         """Promote rollout to next tenant.
 
         Args:
-            tenant: Target tenant (`TenantId.B` or `TenantId.C`).
+            tenant: Target tenant (str "B"/"C" or TenantId enum).
 
         Returns:
             StepResult after promotion attempt.
@@ -166,6 +178,7 @@ class ChangeGuardToolEnv:
         Raises:
             ValueError: If tenant/stage combination is invalid.
         """
+        tenant = _tenant_arg(tenant)
         self._ensure_active("promote_upgrade")
         if tenant not in {TenantId.B, TenantId.C}:
             raise ValueError("promote_upgrade supports only TenantId.B or TenantId.C.")
@@ -182,11 +195,11 @@ class ChangeGuardToolEnv:
         )
         return self._apply_action(ActionType.FINALIZE_UPGRADE, tenant)
 
-    def enable_compat_mode(self, tenant: TenantId = TenantId.C) -> StepResult:
+    def enable_compat_mode(self, tenant: Any = TenantId.C) -> StepResult:
         """Enable compatibility mode for Tenant C before finalization.
 
         Args:
-            tenant: Must be Tenant C.
+            tenant: Must be Tenant C (str "C" or TenantId.C).
 
         Returns:
             StepResult after compatibility mode action.
@@ -194,16 +207,17 @@ class ChangeGuardToolEnv:
         Raises:
             ValueError: If called for non-C tenant.
         """
+        tenant = _tenant_arg(tenant)
         self._ensure_active("enable_compat_mode")
         if tenant != TenantId.C:
             raise ValueError("enable_compat_mode only supports TenantId.C in v1.")
         return self._apply_action(ActionType.ENABLE_COMPAT_MODE_TENANT_C, tenant)
 
-    def request_approval(self, tenant: TenantId = TenantId.C) -> StepResult:
+    def request_approval(self, tenant: Any = TenantId.C) -> StepResult:
         """Request enterprise approval gate required for C finalization.
 
         Args:
-            tenant: Must be Tenant C.
+            tenant: Must be Tenant C (str "C" or TenantId.C).
 
         Returns:
             StepResult after approval request.
@@ -211,6 +225,7 @@ class ChangeGuardToolEnv:
         Raises:
             ValueError: If called for non-C tenant or before B rollout.
         """
+        tenant = _tenant_arg(tenant)
         self._ensure_active("request_approval")
         if tenant != TenantId.C:
             raise ValueError("request_approval only supports TenantId.C in v1.")
@@ -220,31 +235,58 @@ class ChangeGuardToolEnv:
         )
         return self._apply_action(ActionType.REQUEST_APPROVAL_TENANT_C, tenant)
 
-    def defer_tenant(self, tenant: TenantId = TenantId.C) -> StepResult:
+    def apply_backfill(self) -> StepResult:
+        """Enable the backfill mitigation (satisfies ADD_NOT_NULL_COL diff ops).
+
+        Global migration flag. Pays full reward only if the current diff and
+        tenant dependencies actually require it.
+        """
+        self._ensure_active("apply_backfill")
+        return self._apply_action(ActionType.APPLY_BACKFILL)
+
+    def apply_announce_deprecation(self) -> StepResult:
+        """Enable the deprecation-announcement mitigation (satisfies DROP_COL).
+
+        Global migration flag. Pays full reward only if actually required.
+        """
+        self._ensure_active("apply_announce_deprecation")
+        return self._apply_action(ActionType.APPLY_ANNOUNCE_DEPRECATION)
+
+    def apply_dual_write(self) -> StepResult:
+        """Enable the dual-write mitigation (satisfies CHANGE_TYPE diff ops).
+
+        Global migration flag. Pays full reward only if actually required.
+        """
+        self._ensure_active("apply_dual_write")
+        return self._apply_action(ActionType.APPLY_DUAL_WRITE)
+
+    def defer_tenant(self, tenant: Any = TenantId.C) -> StepResult:
         """Defer risky tenant rollout instead of unsafe promotion.
 
         Args:
-            tenant: Tenant to defer (defaults to Tenant C).
+            tenant: Tenant to defer (str "C" or TenantId.C; default C).
 
         Returns:
             StepResult possibly leading to safe partial completion.
         """
+        tenant = _tenant_arg(tenant)
         self._ensure_active("defer_tenant")
         return self._apply_action(ActionType.PAUSE_ROLLOUT, tenant)
 
-    def rollback_tenant(self, tenant: Optional[TenantId] = None) -> StepResult:
+    def rollback_tenant(self, tenant: Any = None) -> StepResult:
         """Rollback a tenant or full rollout (when tenant is None).
 
         Args:
-            tenant: Optional tenant id. If None, rollback all tenants.
+            tenant: Optional tenant id (str or TenantId). If None, rollback all.
 
         Returns:
             StepResult containing rollback outcome.
         """
+        tenant = _tenant_arg(tenant) if tenant is not None else None
         self._ensure_active("rollback_tenant")
         return self._apply_action(ActionType.ROLLBACK_UPGRADE, tenant)
 
-    def call_tool(self, tool_name: str, tool_args: Optional[Dict[str, Any]] = None) -> StepResult:
+    def _call_tool(self, tool_name: str, tool_args: Optional[Dict[str, Any]] = None) -> StepResult:
         """Dispatch a named tool call to the matching typed method.
 
         Args:
@@ -265,6 +307,9 @@ class ChangeGuardToolEnv:
             "canary_upgrade": lambda: self.canary_upgrade(_tenant_arg(tool_args.get("tenant", TenantId.A))),
             "promote_upgrade": lambda: self.promote_upgrade(_tenant_arg(tool_args.get("tenant"))),
             "enable_compat_mode": lambda: self.enable_compat_mode(_tenant_arg(tool_args.get("tenant", TenantId.C))),
+            "apply_backfill": self.apply_backfill,
+            "apply_announce_deprecation": self.apply_announce_deprecation,
+            "apply_dual_write": self.apply_dual_write,
             "request_approval": lambda: self.request_approval(_tenant_arg(tool_args.get("tenant", TenantId.C))),
             "defer_tenant": lambda: self.defer_tenant(_tenant_arg(tool_args.get("tenant", TenantId.C))),
             "rollback_tenant": lambda: self.rollback_tenant(
@@ -273,11 +318,11 @@ class ChangeGuardToolEnv:
         }
         if tool_name not in dispatch:
             raise ValueError(
-                f"Unknown tool '{tool_name}'. Available tools: {[t['name'] for t in self.available_tools()]}"
+                f"Unknown tool '{tool_name}'. Available tools: {[t['name'] for t in self._available_tools()]}"
             )
         return dispatch[tool_name]()
 
-    def get_episode_summary(self) -> EpisodeSummary:
+    def _get_episode_summary(self) -> EpisodeSummary:
         """Return episode summary from server (latest cached if done)."""
         if self.episode_summary is not None:
             return self.episode_summary
@@ -324,13 +369,13 @@ class ChangeGuardToolEnv:
 
         if self.done:
             self.episode_summary = self.client.fetch_summary()
-            self.episode_metrics = self.build_episode_metrics()
+            self.episode_metrics = self._build_episode_metrics()
 
         return result
 
-    def build_episode_metrics(self) -> Dict[str, Any]:
+    def _build_episode_metrics(self) -> Dict[str, Any]:
         """Build judge-friendly per-episode metrics for training/eval dashboards."""
-        summary = self.get_episode_summary()
+        summary = self._get_episode_summary()
         verdict = summary.final_verdict.value
         safe_full = verdict == "safe_finalized"
         safe_partial = verdict == "safe_rollback"

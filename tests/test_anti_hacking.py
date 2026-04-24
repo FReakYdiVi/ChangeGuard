@@ -95,8 +95,12 @@ class AntiHackingTests(unittest.TestCase):
             env.reset(seed=seed, difficulty="medium")
             signatures.append(env.world_signature())
 
-        # Invariant dimensions should not vary by seed.
-        invariant_keys = {"difficulty", "max_steps", "tenant_ids", "c_requires_approval", "scenario_id"}
+        # Backcompat scenarios (default) use fixed presets, so schema_v2_diff and
+        # tenant_deps are invariant across seeds.
+        invariant_keys = {
+            "difficulty", "max_steps", "tenant_ids", "c_requires_approval",
+            "scenario_id", "schema_v2_diff", "tenant_deps",
+        }
         for key in invariant_keys:
             values = {sig[key] if not isinstance(sig[key], list) else tuple(sig[key]) for sig in signatures}
             self.assertEqual(len(values), 1, f"invariant key varied unexpectedly: {key}")

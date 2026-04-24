@@ -1,12 +1,16 @@
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 WORKDIR /app
+
+# Install uv (fast Python package manager).
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 # Build context should be repo root when using:
 # docker build -f changeguard/Dockerfile .
 COPY . /app
 
-RUN pip install --no-cache-dir --upgrade pip
+# Install the changeguard-env package (server only — no training extras here).
+RUN uv pip install --system --no-cache-dir -e .
 
 ENV CHANGEGUARD_MAX_CONCURRENT_ENVS=16
 ENV PYTHONUNBUFFERED=1

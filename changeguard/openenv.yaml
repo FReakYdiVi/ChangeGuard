@@ -50,12 +50,22 @@ actions:
         values: [B, C]
         required: true
   - name: enable_compat_mode
-    description: Enable compatibility mode for Tenant C.
+    description: Global mitigation - compat_mode (satisfies RENAME_COL diff ops for tenants with legacy_export).
     args:
       tenant:
         type: enum
         values: [C]
-        required: true
+        required: false
+        default: C
+  - name: apply_backfill
+    description: Global mitigation - backfill (satisfies ADD_NOT_NULL_COL diff ops for tenants with strict_nullability).
+    args: {}
+  - name: apply_announce_deprecation
+    description: Global mitigation - announce_deprecation (satisfies DROP_COL for tenants with deprecation_policy).
+    args: {}
+  - name: apply_dual_write
+    description: Global mitigation - dual_write (satisfies CHANGE_TYPE for tenants with type_sensitivity).
+    args: {}
   - name: request_approval
     description: Request approval gate for Tenant C.
     args:

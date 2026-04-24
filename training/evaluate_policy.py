@@ -59,7 +59,7 @@ def _run_policy_on_pack(
         except Exception:
             # Keep eval robust; wrapper will still produce metrics from current episode state.
             pass
-        rows.append(env.build_episode_metrics())
+        rows.append(env._build_episode_metrics())
 
     agg = {
         "policy": policy_name,

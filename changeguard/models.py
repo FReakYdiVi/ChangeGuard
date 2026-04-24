@@ -46,9 +46,46 @@ class ActionType(str, Enum):
     EXPAND_ROLLOUT_TENANT_B = "expand_rollout_tenant_b"
     PAUSE_ROLLOUT = "pause_rollout"
     ENABLE_COMPAT_MODE_TENANT_C = "enable_compat_mode_tenant_c"
+    APPLY_BACKFILL = "apply_backfill"
+    APPLY_ANNOUNCE_DEPRECATION = "apply_announce_deprecation"
+    APPLY_DUAL_WRITE = "apply_dual_write"
     REQUEST_APPROVAL_TENANT_C = "request_approval_tenant_c"
     FINALIZE_UPGRADE = "finalize_upgrade"
     ROLLBACK_UPGRADE = "rollback_upgrade"
+
+
+class DiffOpKind(str, Enum):
+    """Kinds of schema diff operations a V1->V2 migration may contain."""
+
+    RENAME_COL = "rename_col"              # requires compat_mode if any tenant has legacy_export
+    ADD_NULL_COL = "add_null_col"          # always safe
+    ADD_NOT_NULL_COL = "add_not_null_col"  # requires backfill if any tenant has strict_nullability
+    DROP_COL = "drop_col"                  # requires announce_deprecation if any tenant has deprecation_policy
+    CHANGE_TYPE = "change_type"            # requires dual_write if any tenant has type_sensitivity
+
+
+class DependencyProfile(str, Enum):
+    """Per-tenant sensitivity to specific diff-op kinds."""
+
+    LEGACY_EXPORT = "legacy_export"            # breaks on RENAME_COL without compat_mode
+    STRICT_NULLABILITY = "strict_nullability"  # breaks on ADD_NOT_NULL_COL without backfill
+    DEPRECATION_POLICY = "deprecation_policy"  # breaks on DROP_COL without announce_deprecation
+    TYPE_SENSITIVITY = "type_sensitivity"      # breaks on CHANGE_TYPE without dual_write
+
+
+class MigrationMitigation(str, Enum):
+    """Global migration strategies the agent can enable before finalize."""
+
+    COMPAT_MODE = "compat_mode"
+    BACKFILL = "backfill"
+    ANNOUNCE_DEPRECATION = "announce_deprecation"
+    DUAL_WRITE = "dual_write"
+
+
+# Which mitigation satisfies which diff op kind.
+MITIGATION_FOR_OP: Dict["DiffOpKind", "MigrationMitigation"] = {}
+# Which dependency profile is sensitive to which op kind.
+SENSITIVE_DEP_FOR_OP: Dict["DiffOpKind", "DependencyProfile"] = {}
 
 
 class DifficultyLevel(str, Enum):
@@ -83,6 +120,22 @@ class VerifierVerdict(str, Enum):
     TIMEOUT_FAILURE = "timeout_failure"
 
 
+MITIGATION_FOR_OP.update({
+    DiffOpKind.RENAME_COL: MigrationMitigation.COMPAT_MODE,
+    DiffOpKind.ADD_NOT_NULL_COL: MigrationMitigation.BACKFILL,
+    DiffOpKind.DROP_COL: MigrationMitigation.ANNOUNCE_DEPRECATION,
+    DiffOpKind.CHANGE_TYPE: MigrationMitigation.DUAL_WRITE,
+    # ADD_NULL_COL intentionally absent — no mitigation needed.
+})
+
+SENSITIVE_DEP_FOR_OP.update({
+    DiffOpKind.RENAME_COL: DependencyProfile.LEGACY_EXPORT,
+    DiffOpKind.ADD_NOT_NULL_COL: DependencyProfile.STRICT_NULLABILITY,
+    DiffOpKind.DROP_COL: DependencyProfile.DEPRECATION_POLICY,
+    DiffOpKind.CHANGE_TYPE: DependencyProfile.TYPE_SENSITIVITY,
+})
+
+
 def _coerce_enum(enum_cls: Any, value: Any) -> Any:
     if isinstance(value, enum_cls):
         return value
@@ -101,18 +154,27 @@ def _enum_as_value(data: Any) -> Any:
 
 @dataclass
 class TenantVisibleState:
-    """Visible per-tenant state exposed in observations."""
+    """Visible per-tenant state exposed in observations.
+
+    `dependencies_revealed` stays empty until the agent runs `inspect_tenant`
+    on this tenant. Once revealed, the list shows which DependencyProfiles
+    this tenant has, which lets the agent reason about required mitigations.
+    """
 
     tenant_id: TenantId
     risk_tier: RiskTier
     schema_version: SchemaVersion = SchemaVersion.V1
     compat_mode_enabled: bool = False
     approval_required: bool = False
+    dependencies_revealed: List[DependencyProfile] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         self.tenant_id = _coerce_enum(TenantId, self.tenant_id)
         self.risk_tier = _coerce_enum(RiskTier, self.risk_tier)
         self.schema_version = _coerce_enum(SchemaVersion, self.schema_version)
+        self.dependencies_revealed = [
+            _coerce_enum(DependencyProfile, d) for d in (self.dependencies_revealed or [])
+        ]
 
     def to_dict(self) -> Dict[str, Any]:
         return _enum_as_value(asdict(self))
@@ -125,10 +187,15 @@ class TenantHiddenState:
     tenant_id: TenantId
     has_legacy_export_dependency: bool = False
     export_job_health_internal: SignalLevel = SignalLevel.HEALTHY
+    # Full dependency set (server-authoritative; visible field is a revealed copy).
+    dependencies: List[DependencyProfile] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         self.tenant_id = _coerce_enum(TenantId, self.tenant_id)
         self.export_job_health_internal = _coerce_enum(SignalLevel, self.export_job_health_internal)
+        self.dependencies = [
+            _coerce_enum(DependencyProfile, d) for d in (self.dependencies or [])
+        ]
 
     def to_dict(self) -> Dict[str, Any]:
         return _enum_as_value(asdict(self))
@@ -263,6 +330,10 @@ class ChangeGuardObservation:
     steps_remaining: int = 12
     legal_actions: List[ActionType] = field(default_factory=list)
     summary_text: str = "Tenant-safe rollout in progress."
+    # V2 migration plan (always visible — it's the public changelog).
+    schema_v2_diff: List[DiffOpKind] = field(default_factory=list)
+    # Global mitigation flags the agent has enabled for this migration.
+    mitigations_applied: List[MigrationMitigation] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         self.stage = _coerce_enum(RolloutStage, self.stage)
@@ -284,6 +355,10 @@ class ChangeGuardObservation:
         self.tenants_visible = normalized
 
         self.legal_actions = [_coerce_enum(ActionType, action) for action in self.legal_actions]
+        self.schema_v2_diff = [_coerce_enum(DiffOpKind, op) for op in self.schema_v2_diff]
+        self.mitigations_applied = [
+            _coerce_enum(MigrationMitigation, m) for m in self.mitigations_applied
+        ]
 
     @property
     def phase(self) -> str:
@@ -306,6 +381,8 @@ class ChangeGuardObservation:
             "steps_remaining": self.steps_remaining,
             "legal_actions": [action.value for action in self.legal_actions],
             "summary_text": self.summary_text,
+            "schema_v2_diff": [op.value for op in self.schema_v2_diff],
+            "mitigations_applied": [m.value for m in self.mitigations_applied],
         }
 
     @classmethod
@@ -332,6 +409,10 @@ class ChangeGuardObservation:
             steps_remaining=int(data.get("steps_remaining", 0)),
             legal_actions=[_coerce_enum(ActionType, a) for a in data.get("legal_actions", [])],
             summary_text=str(data.get("summary_text", "")),
+            schema_v2_diff=[_coerce_enum(DiffOpKind, op) for op in data.get("schema_v2_diff", [])],
+            mitigations_applied=[
+                _coerce_enum(MigrationMitigation, m) for m in data.get("mitigations_applied", [])
+            ],
         )
 
 
