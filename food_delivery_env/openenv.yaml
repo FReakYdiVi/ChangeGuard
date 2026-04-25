@@ -1,0 +1,62 @@
+name: food_delivery_v0
+version: 0.1.0
+kind: environment
+
+description: >
+  Food delivery finite-state OpenEnv simulation. A courier must accept one
+  order, travel to the restaurant, wait only when food is not ready, pick up,
+  travel to the customer, and deliver before the step budget expires.
+
+runtime:
+  app_factory: food_delivery_env.server.app:create_app
+  supports_concurrent_sessions: true
+  max_concurrent_envs_env: FOOD_DELIVERY_MAX_CONCURRENT_ENVS
+
+api:
+  health_path: /health
+  ready_path: /ready
+  reset_path: /reset
+  step_path: /step
+  state_path: /state
+  summary_path: /summary
+
+actions:
+  - name: assign_order
+    description: Assign order_0 to courier_0.
+    args: {}
+  - name: move_to_restaurant
+    description: Move the courier from dispatch to restaurant_0.
+    args: {}
+  - name: wait_at_restaurant
+    description: Wait at restaurant_0 when the food is not ready.
+    args: {}
+  - name: pickup_order
+    description: Pick up order_0 once food is ready and the courier is at restaurant_0.
+    args: {}
+  - name: move_to_customer
+    description: Move the courier from restaurant_0 to customer_0 after pickup.
+    args: {}
+  - name: deliver_order
+    description: Deliver order_0 to customer_0.
+    args: {}
+
+outputs:
+  observation:
+    fields:
+      - state
+      - reward
+      - done
+      - truncated
+      - verifier_status
+      - reward_breakdown
+      - legal_actions
+      - action_mask
+      - summary_text
+      - info
+  episode_summary:
+    fields:
+      - final_verdict
+      - total_reward
+      - steps_taken
+      - invalid_actions
+      - action_trace

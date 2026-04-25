@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "food-delivery-env"
+version = "0.1.0"
+description = "Food delivery OpenEnv simulation benchmark"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+authors = [{ name = "Food Delivery Env Maintainers" }]
+dependencies = [
+  "openenv-core>=0.2.0",
+  "pydantic>=2.0.0",
+]
+
+[project.scripts]
+server = "food_delivery_env.server.app:main"
+food-delivery-server = "food_delivery_env.server.app:main"
+
+[project.entry-points."openenv.environments"]
+food_delivery = "food_delivery_env.server.app:create_app"
+
+[tool.setuptools]
+include-package-data = true
+packages = ["food_delivery_env", "food_delivery_env.server"]
+
+[tool.setuptools.package-dir]
+"food_delivery_env" = "."
+
+[tool.uv]
+managed = true

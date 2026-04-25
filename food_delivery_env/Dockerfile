@@ -9,13 +9,13 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 # docker build -f Dockerfile .
 COPY . /app
 
-# Install the changeguard-env package (server only — no training extras here).
+# Install the food-delivery-env package.
 RUN uv pip install --system --no-cache-dir -e .
 
-ENV CHANGEGUARD_MAX_CONCURRENT_ENVS=16
+ENV FOOD_DELIVERY_MAX_CONCURRENT_ENVS=16
 ENV PYTHONUNBUFFERED=1
 ENV PORT=7860
 
 EXPOSE 7860
 
-CMD ["python", "-m", "changeguard.server.app"]
+CMD ["python", "-m", "food_delivery_env.server.app"]
