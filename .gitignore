@@ -33,3 +33,6 @@ artifacts/
 .DS_Store
 .vscode/
 .idea/
+
+# Frontend dependencies
+node_modules/

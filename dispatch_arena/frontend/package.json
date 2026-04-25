@@ -1,0 +1,16 @@
+{
+  "name": "dispatch-arena-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --outDir ../server/static --emptyOutDir"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "4.7.0",
+    "react": "latest",
+    "react-dom": "latest",
+    "vite": "4.5.14"
+  }
+}

@@ -1,0 +1,79 @@
+name: dispatch_arena_v0
+version: 0.1.0
+kind: environment
+
+description: >
+  Dispatch Arena is a deterministic delivery-dispatch environment. Mini mode
+  trains quickly with one courier and one order; normal mode demonstrates
+  centralized dispatch over multiple couriers and orders.
+
+runtime:
+  app_factory: dispatch_arena.server.app:create_app
+  supports_concurrent_sessions: true
+  max_concurrent_envs_env: DISPATCH_ARENA_MAX_CONCURRENT_ENVS
+
+api:
+  health_path: /healthz
+  ready_path: /ready
+  reset_path: /reset
+  step_path: /step
+  state_path: /state
+  summary_path: /summary
+
+actions:
+  - name: wait
+    mode: mini
+    args: {}
+  - name: go_pickup
+    mode: mini
+    args: {}
+  - name: go_dropoff
+    mode: mini
+    args: {}
+  - name: pickup
+    mode: mini
+    args: {}
+  - name: dropoff
+    mode: mini
+    args: {}
+  - name: assign
+    mode: normal
+    args:
+      courier_id: string
+      order_id: string
+  - name: reposition
+    mode: normal
+    args:
+      courier_id: string
+      node_id: string
+  - name: hold
+    mode: normal
+    args:
+      courier_id: string
+  - name: prioritize
+    mode: normal
+    args:
+      order_id: string
+
+outputs:
+  observation:
+    fields:
+      - state
+      - reward
+      - done
+      - truncated
+      - verifier_status
+      - reward_breakdown
+      - legal_actions
+      - action_mask
+      - summary_text
+      - info
+  episode_summary:
+    fields:
+      - final_verdict
+      - total_reward
+      - ticks_taken
+      - invalid_actions
+      - action_trace
+      - delivered_orders
+      - expired_orders
