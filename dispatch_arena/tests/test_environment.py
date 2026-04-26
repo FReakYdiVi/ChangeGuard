@@ -152,6 +152,96 @@ class DispatchArenaEnvironmentTests(unittest.TestCase):
         self.assertTrue(obs.info["invalid_action"])
         self.assertLess(obs.reward_breakdown.invalid_penalty, 0.0)
 
+    def test_rolling_arrivals_appear_over_time(self):
+        config = Config(
+            mode=Mode.NORMAL,
+            max_ticks=20,
+            num_couriers=3,
+            num_orders=5,
+            scenario_bucket="easy",
+            rolling_arrivals=True,
+        )
+        env = DispatchArenaEnvironment(config)
+        obs = env.reset(seed=11)
+
+        initial_visible = len(obs.state.orders)
+        # With rolling enabled and num_orders=5, fewer than all orders should
+        # be visible at t=0 — the rest are scheduled to arrive later.
+        self.assertLess(initial_visible, 5)
+
+        # Run a heuristic loop; by the end, every order should have arrived
+        # (i.e., num_orders worth of orders should appear in state.orders).
+        while not obs.done:
+            obs = env.step(heuristic_action(obs))
+        self.assertEqual(len(obs.state.orders), 5)
+
+    def test_pending_arrivals_never_leak_in_public_state(self):
+        config = Config(
+            mode=Mode.NORMAL,
+            max_ticks=20,
+            num_couriers=3,
+            num_orders=6,
+            rolling_arrivals=True,
+        )
+        env = DispatchArenaEnvironment(config)
+        obs = env.reset(seed=13)
+
+        # The env has pending arrivals scheduled for future ticks. The visible
+        # state should expose strictly fewer orders than the scenario total.
+        self.assertGreater(len(env._pending_arrivals), 0)
+        visible_ids = {order.id for order in obs.state.orders}
+        pending_ids = {order.id for order in env._pending_arrivals}
+        self.assertEqual(visible_ids & pending_ids, set())
+
+        # And no pending order id should appear in any public serialization.
+        public_blob = str(obs.to_dict()) + str(env.state.to_dict()) + obs.summary_text
+        for pending_id in pending_ids:
+            self.assertNotIn(pending_id, public_blob)
+
+    def test_traffic_noise_is_deterministic_and_extends_eta(self):
+        config_no_traffic = Config(
+            mode=Mode.NORMAL,
+            max_ticks=20,
+            num_couriers=2,
+            num_orders=3,
+            traffic_noise=0.0,
+        )
+        config_with_traffic = Config(
+            mode=Mode.NORMAL,
+            max_ticks=20,
+            num_couriers=2,
+            num_orders=3,
+            traffic_noise=1.0,
+        )
+
+        env_a = DispatchArenaEnvironment(config_with_traffic)
+        env_b = DispatchArenaEnvironment(config_with_traffic)
+        env_a.reset(seed=21)
+        env_b.reset(seed=21)
+        # Same seed → identical traffic multipliers.
+        self.assertEqual(env_a._traffic_multipliers, env_b._traffic_multipliers)
+        # Multipliers must be >= 1.0 (uniform 1.0 .. 1.0+noise).
+        self.assertTrue(all(m >= 1.0 for m in env_a._traffic_multipliers.values()))
+
+        env_clean = DispatchArenaEnvironment(config_no_traffic)
+        env_clean.reset(seed=21)
+        self.assertEqual(env_clean._traffic_multipliers, {})
+
+    def test_traffic_multipliers_never_appear_in_observation(self):
+        config = Config(
+            mode=Mode.NORMAL,
+            max_ticks=20,
+            num_couriers=2,
+            num_orders=3,
+            traffic_noise=0.8,
+        )
+        env = DispatchArenaEnvironment(config)
+        obs = env.reset(seed=33)
+
+        public_blob = str(obs.to_dict()) + str(env.state.to_dict())
+        self.assertNotIn("traffic_multiplier", public_blob)
+        self.assertNotIn("_traffic", public_blob)
+
 
 if __name__ == "__main__":
     unittest.main()

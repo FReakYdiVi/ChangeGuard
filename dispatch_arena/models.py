@@ -105,11 +105,13 @@ class Order(DispatchArenaModel):
     pickup_node_id: str
     dropoff_node_id: str
     created_tick: int = 0
+    arrival_tick: int = 0
     prep_remaining: Optional[int] = None
     deadline_tick: int = 20
     status: OrderStatus = OrderStatus.QUEUED
     assigned_courier_id: Optional[str] = None
     ready_now: Optional[bool] = None
+    delivered_tick: Optional[int] = None
 
 
 class Config(DispatchArenaModel):
@@ -120,11 +122,15 @@ class Config(DispatchArenaModel):
     num_orders: int = 1
     scenario_bucket: str = "easy"
     progress_shaping: bool = True
+    rolling_arrivals: bool = False
+    traffic_noise: float = 0.0
 
     @model_validator(mode="after")
     def _validate_config(self) -> "Config":
         if self.max_ticks <= 0:
             raise ValueError("max_ticks must be > 0")
+        if self.traffic_noise < 0.0 or self.traffic_noise > 2.0:
+            raise ValueError("traffic_noise must be in [0.0, 2.0]")
         if self.mode == Mode.MINI:
             self.num_couriers = 1
             self.num_orders = 1

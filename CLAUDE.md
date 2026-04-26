@@ -122,12 +122,12 @@ source of truth for *why* a change is worth doing.
 | Hidden prep, action masks, decomposed rewards | Done |
 | Replay JSONL + WebSocket streaming | Done |
 | FastAPI + Docker for HF Space deploy | Done |
-| Rolling order arrivals during a shift | **Not yet** |
-| Travel/traffic noise applied at step time | **Not yet** |
+| Rolling order arrivals during a shift | Done (normal mode, `Config.rolling_arrivals`) |
+| Travel/traffic noise applied at step time | Done (normal mode, `Config.traffic_noise`) |
 | Restaurant availability windows | **Not yet** |
 | Order bundling (one courier, two drops) | **Not yet** |
 | Stockouts / substitutions / customer messaging | **Not yet** |
-| TRL GRPO trainer wiring + `environment_factory` wrapper | **Not yet** |
+| TRL GRPO trainer wiring + `environment_factory` wrapper | Done ([scripts/train_grpo_smoke.py](dispatch_arena/scripts/train_grpo_smoke.py)) |
 | Heuristic / prompt-only baselines for before-after demos | **Not yet** |
 
 When adding new mechanics, prefer extending `Config` (new flags,

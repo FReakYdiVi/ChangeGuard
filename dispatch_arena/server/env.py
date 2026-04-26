@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import math
 import random
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from dispatch_arena.models import (
     Action,
@@ -39,6 +40,9 @@ class DispatchArenaEnvironment:
     _state: Optional[State] = None
     _reward_model: RewardModel = field(default_factory=RewardModel)
     _action_trace: List[Action] = field(default_factory=list)
+    # Hidden simulator-only state. Never serialized into Observation/State.
+    _pending_arrivals: List[Order] = field(default_factory=list)
+    _traffic_multipliers: Dict[Tuple[str, str], float] = field(default_factory=dict)
 
     def reset(
         self,
@@ -50,6 +54,15 @@ class DispatchArenaEnvironment:
             self.config = config if isinstance(config, Config) else Config.model_validate(dict(config))
         self._rng.seed(seed)
         scenario = generate_scenario(self.config, seed)
+
+        # Partition orders: anything arriving at t=0 is visible immediately;
+        # everything else is held in the env's hidden pending list.
+        initial_orders = [o for o in scenario.orders if o.arrival_tick == 0]
+        pending = [o for o in scenario.orders if o.arrival_tick > 0]
+        pending.sort(key=lambda o: o.arrival_tick)
+        self._pending_arrivals = pending
+        self._traffic_multipliers = dict(scenario.traffic_multipliers)
+
         self._state = State(
             episode_id=episode_id,
             tick=0,
@@ -59,7 +72,7 @@ class DispatchArenaEnvironment:
             nodes=scenario.nodes,
             travel_time_matrix=scenario.travel_time_matrix,
             couriers=scenario.couriers,
-            orders=scenario.orders,
+            orders=initial_orders,
         )
         self._action_trace = []
         self._refresh_derived()
@@ -83,6 +96,7 @@ class DispatchArenaEnvironment:
             valid = parsed_action.action_type in legal_actions
             if valid:
                 self._progress_prep()
+                self._release_arrivals(info)
                 self._apply_mini_action(parsed_action, reward, info)
             else:
                 self._mark_invalid(parsed_action, reward, info)
@@ -90,6 +104,7 @@ class DispatchArenaEnvironment:
             valid = self._is_valid_normal_action(parsed_action)
             if valid:
                 self._progress_prep()
+                self._release_arrivals(info)
                 self._apply_normal_action(parsed_action, reward, info)
                 self._advance_normal_couriers(reward, info)
                 self._expire_orders(info)
@@ -218,6 +233,7 @@ class DispatchArenaEnvironment:
             info["events"].append(f"{courier.id} moved to dropoff")
         elif action_type == MiniActionType.DROPOFF.value:
             order.status = OrderStatus.DELIVERED
+            order.delivered_tick = state.tick
             courier.load = None
             courier.assigned_order_id = None
             state.done = True
@@ -305,6 +321,7 @@ class DispatchArenaEnvironment:
             elif courier.status == CourierStatus.TO_DROPOFF and courier.eta_remaining == 0:
                 order = self._order(courier.load)
                 order.status = OrderStatus.DELIVERED
+                order.delivered_tick = state.tick
                 on_time = state.tick <= order.deadline_tick
                 courier.load = None
                 courier.assigned_order_id = None
@@ -334,6 +351,18 @@ class DispatchArenaEnvironment:
             if order.prep_remaining == 0:
                 order.status = OrderStatus.READY
 
+    def _release_arrivals(self, info: Dict[str, Any]) -> None:
+        if not self._pending_arrivals:
+            return
+        state = self._require_state()
+        while self._pending_arrivals and self._pending_arrivals[0].arrival_tick <= state.tick:
+            new_order = self._pending_arrivals.pop(0)
+            new_order.created_tick = state.tick
+            if new_order.prep_remaining == 0:
+                new_order.status = OrderStatus.READY
+            state.orders.append(new_order)
+            info["events"].append(f"{new_order.id} arrived")
+
     def _expire_orders(self, info: Dict[str, Any]) -> None:
         state = self._require_state()
         for order in state.orders:
@@ -345,9 +374,13 @@ class DispatchArenaEnvironment:
         state = self._require_state()
         delivered = sum(1 for order in state.orders if order.status == OrderStatus.DELIVERED)
         active = [order for order in state.orders if order.status in {OrderStatus.QUEUED, OrderStatus.READY, OrderStatus.PICKED}]
-        state.backlog = len(active)
+        # Backlog must include orders not yet visible (rolling arrivals) — else
+        # the SLA pressure metric and 'done' check ignore future work.
+        state.backlog = len(active) + len(self._pending_arrivals)
         state.sla_pressure = 0.0 if not active else sum(1 for order in active if order.deadline_tick - state.tick <= 3) / len(active)
-        if delivered == len(state.orders):
+        all_visible_resolved = delivered == len(state.orders)
+        no_more_pending = not self._pending_arrivals
+        if all_visible_resolved and no_more_pending:
             state.done = True
             state.verifier_status = VerifierVerdict.DELIVERED_SUCCESSFULLY
         elif state.truncated:
@@ -358,7 +391,9 @@ class DispatchArenaEnvironment:
     def _travel_time(self, src: str, dst: Optional[str]) -> int:
         if dst is None:
             return 0
-        return max(1, self._require_state().travel_time_matrix.get(src, {}).get(dst, 1))
+        base = self._require_state().travel_time_matrix.get(src, {}).get(dst, 1)
+        multiplier = self._traffic_multipliers.get((src, dst), 1.0)
+        return max(1, math.ceil(base * multiplier))
 
     def _delivery_imbalance(self) -> int:
         state = self._require_state()

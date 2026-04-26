@@ -1,0 +1,2414 @@
+[
+  {
+    "name": "suburban_steady_state_seed19773",
+    "difficulty": "easy",
+    "theme": "Suburban steady state",
+    "description": "Suburban afternoon with light, predictable load. Mostly grocery orders. Tests the agent's ability to read a clean dashboard and act decisively without overthinking.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 19773,
+    "mode": "normal",
+    "max_ticks": 21,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Excessive 'hold' actions while waiting for prep to complete"
+    ],
+    "success_criteria": "All orders delivered within 16 ticks."
+  },
+  {
+    "name": "weekday_lunch_simple_seed66511",
+    "difficulty": "easy",
+    "theme": "Weekday lunch in a single neighborhood",
+    "description": "A handful of food orders during a quiet weekday lunch. Restaurants are responsive, deadlines are loose, no traffic surprises. The dispatcher should learn the basic assign-then-deliver loop here.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 66511,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Dispatcher idles couriers instead of pre-positioning at the store",
+      "Repeated invalid assigns when the order is already taken"
+    ],
+    "success_criteria": "Deliver every order on time with zero invalid actions."
+  },
+  {
+    "name": "campus_quiet_afternoon_seed11890",
+    "difficulty": "easy",
+    "theme": "Campus afternoon, light load",
+    "description": "Late-afternoon orders around a small campus. Two couriers, three orders, everyone visible from t=0. The teaching value here is courier load balance: one courier should not take all three orders sequentially.",
+    "skill_focus": [
+      "courier_load_balance"
+    ],
+    "seed": 11890,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Single courier hoards all assignments while the other idles",
+      "Fairness penalty accrues unnoticed"
+    ],
+    "success_criteria": "Both couriers deliver at least one order; reward exceeds 8."
+  },
+  {
+    "name": "weekday_lunch_simple_seed75643",
+    "difficulty": "easy",
+    "theme": "Weekday lunch in a single neighborhood",
+    "description": "A handful of food orders during a quiet weekday lunch. Restaurants are responsive, deadlines are loose, no traffic surprises. The dispatcher should learn the basic assign-then-deliver loop here.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 75643,
+    "mode": "normal",
+    "max_ticks": 22,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Dispatcher idles couriers instead of pre-positioning at the store",
+      "Repeated invalid assigns when the order is already taken"
+    ],
+    "success_criteria": "Deliver every order on time with zero invalid actions."
+  },
+  {
+    "name": "campus_quiet_afternoon_seed37960",
+    "difficulty": "easy",
+    "theme": "Campus afternoon, light load",
+    "description": "Late-afternoon orders around a small campus. Two couriers, three orders, everyone visible from t=0. The teaching value here is courier load balance: one courier should not take all three orders sequentially.",
+    "skill_focus": [
+      "courier_load_balance"
+    ],
+    "seed": 37960,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Single courier hoards all assignments while the other idles",
+      "Fairness penalty accrues unnoticed"
+    ],
+    "success_criteria": "Both couriers deliver at least one order; reward exceeds 8."
+  },
+  {
+    "name": "campus_quiet_afternoon_seed13508",
+    "difficulty": "easy",
+    "theme": "Campus afternoon, light load",
+    "description": "Late-afternoon orders around a small campus. Two couriers, three orders, everyone visible from t=0. The teaching value here is courier load balance: one courier should not take all three orders sequentially.",
+    "skill_focus": [
+      "courier_load_balance"
+    ],
+    "seed": 13508,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Single courier hoards all assignments while the other idles",
+      "Fairness penalty accrues unnoticed"
+    ],
+    "success_criteria": "Both couriers deliver at least one order; reward exceeds 8."
+  },
+  {
+    "name": "weekday_lunch_simple_seed73973",
+    "difficulty": "easy",
+    "theme": "Weekday lunch in a single neighborhood",
+    "description": "A handful of food orders during a quiet weekday lunch. Restaurants are responsive, deadlines are loose, no traffic surprises. The dispatcher should learn the basic assign-then-deliver loop here.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 73973,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Dispatcher idles couriers instead of pre-positioning at the store",
+      "Repeated invalid assigns when the order is already taken"
+    ],
+    "success_criteria": "Deliver every order on time with zero invalid actions."
+  },
+  {
+    "name": "office_park_predictable_seed76751",
+    "difficulty": "easy",
+    "theme": "Office-park predictable cluster",
+    "description": "A tight cluster of customers near one store. Travel is short, prep is the only meaningful uncertainty. Useful as the early curriculum rung before introducing rolling arrivals or traffic.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "courier_load_balance"
+    ],
+    "seed": 76751,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Courier sent to pickup before order is ready, then idles"
+    ],
+    "success_criteria": "100% delivery, on-time bonus on every order."
+  },
+  {
+    "name": "campus_quiet_afternoon_seed10729",
+    "difficulty": "easy",
+    "theme": "Campus afternoon, light load",
+    "description": "Late-afternoon orders around a small campus. Two couriers, three orders, everyone visible from t=0. The teaching value here is courier load balance: one courier should not take all three orders sequentially.",
+    "skill_focus": [
+      "courier_load_balance"
+    ],
+    "seed": 10729,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Single courier hoards all assignments while the other idles",
+      "Fairness penalty accrues unnoticed"
+    ],
+    "success_criteria": "Both couriers deliver at least one order; reward exceeds 8."
+  },
+  {
+    "name": "suburban_steady_state_seed79818",
+    "difficulty": "easy",
+    "theme": "Suburban steady state",
+    "description": "Suburban afternoon with light, predictable load. Mostly grocery orders. Tests the agent's ability to read a clean dashboard and act decisively without overthinking.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 79818,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Excessive 'hold' actions while waiting for prep to complete"
+    ],
+    "success_criteria": "All orders delivered within 16 ticks."
+  },
+  {
+    "name": "campus_quiet_afternoon_seed64090",
+    "difficulty": "easy",
+    "theme": "Campus afternoon, light load",
+    "description": "Late-afternoon orders around a small campus. Two couriers, three orders, everyone visible from t=0. The teaching value here is courier load balance: one courier should not take all three orders sequentially.",
+    "skill_focus": [
+      "courier_load_balance"
+    ],
+    "seed": 64090,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Single courier hoards all assignments while the other idles",
+      "Fairness penalty accrues unnoticed"
+    ],
+    "success_criteria": "Both couriers deliver at least one order; reward exceeds 8."
+  },
+  {
+    "name": "suburban_steady_state_seed77906",
+    "difficulty": "easy",
+    "theme": "Suburban steady state",
+    "description": "Suburban afternoon with light, predictable load. Mostly grocery orders. Tests the agent's ability to read a clean dashboard and act decisively without overthinking.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 77906,
+    "mode": "normal",
+    "max_ticks": 21,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Excessive 'hold' actions while waiting for prep to complete"
+    ],
+    "success_criteria": "All orders delivered within 16 ticks."
+  },
+  {
+    "name": "office_park_predictable_seed91363",
+    "difficulty": "easy",
+    "theme": "Office-park predictable cluster",
+    "description": "A tight cluster of customers near one store. Travel is short, prep is the only meaningful uncertainty. Useful as the early curriculum rung before introducing rolling arrivals or traffic.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "courier_load_balance"
+    ],
+    "seed": 91363,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Courier sent to pickup before order is ready, then idles"
+    ],
+    "success_criteria": "100% delivery, on-time bonus on every order."
+  },
+  {
+    "name": "office_park_predictable_seed37303",
+    "difficulty": "easy",
+    "theme": "Office-park predictable cluster",
+    "description": "A tight cluster of customers near one store. Travel is short, prep is the only meaningful uncertainty. Useful as the early curriculum rung before introducing rolling arrivals or traffic.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "courier_load_balance"
+    ],
+    "seed": 37303,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Courier sent to pickup before order is ready, then idles"
+    ],
+    "success_criteria": "100% delivery, on-time bonus on every order."
+  },
+  {
+    "name": "suburban_steady_state_seed22027",
+    "difficulty": "easy",
+    "theme": "Suburban steady state",
+    "description": "Suburban afternoon with light, predictable load. Mostly grocery orders. Tests the agent's ability to read a clean dashboard and act decisively without overthinking.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 22027,
+    "mode": "normal",
+    "max_ticks": 22,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Excessive 'hold' actions while waiting for prep to complete"
+    ],
+    "success_criteria": "All orders delivered within 16 ticks."
+  },
+  {
+    "name": "suburban_steady_state_seed16953",
+    "difficulty": "easy",
+    "theme": "Suburban steady state",
+    "description": "Suburban afternoon with light, predictable load. Mostly grocery orders. Tests the agent's ability to read a clean dashboard and act decisively without overthinking.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 16953,
+    "mode": "normal",
+    "max_ticks": 22,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Excessive 'hold' actions while waiting for prep to complete"
+    ],
+    "success_criteria": "All orders delivered within 16 ticks."
+  },
+  {
+    "name": "office_park_predictable_seed10562",
+    "difficulty": "easy",
+    "theme": "Office-park predictable cluster",
+    "description": "A tight cluster of customers near one store. Travel is short, prep is the only meaningful uncertainty. Useful as the early curriculum rung before introducing rolling arrivals or traffic.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "courier_load_balance"
+    ],
+    "seed": 10562,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Courier sent to pickup before order is ready, then idles"
+    ],
+    "success_criteria": "100% delivery, on-time bonus on every order."
+  },
+  {
+    "name": "office_park_predictable_seed72119",
+    "difficulty": "easy",
+    "theme": "Office-park predictable cluster",
+    "description": "A tight cluster of customers near one store. Travel is short, prep is the only meaningful uncertainty. Useful as the early curriculum rung before introducing rolling arrivals or traffic.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "courier_load_balance"
+    ],
+    "seed": 72119,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Courier sent to pickup before order is ready, then idles"
+    ],
+    "success_criteria": "100% delivery, on-time bonus on every order."
+  },
+  {
+    "name": "campus_quiet_afternoon_seed10877",
+    "difficulty": "easy",
+    "theme": "Campus afternoon, light load",
+    "description": "Late-afternoon orders around a small campus. Two couriers, three orders, everyone visible from t=0. The teaching value here is courier load balance: one courier should not take all three orders sequentially.",
+    "skill_focus": [
+      "courier_load_balance"
+    ],
+    "seed": 10877,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Single courier hoards all assignments while the other idles",
+      "Fairness penalty accrues unnoticed"
+    ],
+    "success_criteria": "Both couriers deliver at least one order; reward exceeds 8."
+  },
+  {
+    "name": "campus_quiet_afternoon_seed34439",
+    "difficulty": "easy",
+    "theme": "Campus afternoon, light load",
+    "description": "Late-afternoon orders around a small campus. Two couriers, three orders, everyone visible from t=0. The teaching value here is courier load balance: one courier should not take all three orders sequentially.",
+    "skill_focus": [
+      "courier_load_balance"
+    ],
+    "seed": 34439,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Single courier hoards all assignments while the other idles",
+      "Fairness penalty accrues unnoticed"
+    ],
+    "success_criteria": "Both couriers deliver at least one order; reward exceeds 8."
+  },
+  {
+    "name": "suburban_steady_state_seed16449",
+    "difficulty": "easy",
+    "theme": "Suburban steady state",
+    "description": "Suburban afternoon with light, predictable load. Mostly grocery orders. Tests the agent's ability to read a clean dashboard and act decisively without overthinking.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 16449,
+    "mode": "normal",
+    "max_ticks": 22,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Excessive 'hold' actions while waiting for prep to complete"
+    ],
+    "success_criteria": "All orders delivered within 16 ticks."
+  },
+  {
+    "name": "office_park_predictable_seed13571",
+    "difficulty": "easy",
+    "theme": "Office-park predictable cluster",
+    "description": "A tight cluster of customers near one store. Travel is short, prep is the only meaningful uncertainty. Useful as the early curriculum rung before introducing rolling arrivals or traffic.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "courier_load_balance"
+    ],
+    "seed": 13571,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Courier sent to pickup before order is ready, then idles"
+    ],
+    "success_criteria": "100% delivery, on-time bonus on every order."
+  },
+  {
+    "name": "campus_quiet_afternoon_seed57754",
+    "difficulty": "easy",
+    "theme": "Campus afternoon, light load",
+    "description": "Late-afternoon orders around a small campus. Two couriers, three orders, everyone visible from t=0. The teaching value here is courier load balance: one courier should not take all three orders sequentially.",
+    "skill_focus": [
+      "courier_load_balance"
+    ],
+    "seed": 57754,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Single courier hoards all assignments while the other idles",
+      "Fairness penalty accrues unnoticed"
+    ],
+    "success_criteria": "Both couriers deliver at least one order; reward exceeds 8."
+  },
+  {
+    "name": "campus_quiet_afternoon_seed70336",
+    "difficulty": "easy",
+    "theme": "Campus afternoon, light load",
+    "description": "Late-afternoon orders around a small campus. Two couriers, three orders, everyone visible from t=0. The teaching value here is courier load balance: one courier should not take all three orders sequentially.",
+    "skill_focus": [
+      "courier_load_balance"
+    ],
+    "seed": 70336,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Single courier hoards all assignments while the other idles",
+      "Fairness penalty accrues unnoticed"
+    ],
+    "success_criteria": "Both couriers deliver at least one order; reward exceeds 8."
+  },
+  {
+    "name": "office_park_predictable_seed19471",
+    "difficulty": "easy",
+    "theme": "Office-park predictable cluster",
+    "description": "A tight cluster of customers near one store. Travel is short, prep is the only meaningful uncertainty. Useful as the early curriculum rung before introducing rolling arrivals or traffic.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "courier_load_balance"
+    ],
+    "seed": 19471,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Courier sent to pickup before order is ready, then idles"
+    ],
+    "success_criteria": "100% delivery, on-time bonus on every order."
+  },
+  {
+    "name": "weekday_lunch_simple_seed63973",
+    "difficulty": "easy",
+    "theme": "Weekday lunch in a single neighborhood",
+    "description": "A handful of food orders during a quiet weekday lunch. Restaurants are responsive, deadlines are loose, no traffic surprises. The dispatcher should learn the basic assign-then-deliver loop here.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 63973,
+    "mode": "normal",
+    "max_ticks": 21,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Dispatcher idles couriers instead of pre-positioning at the store",
+      "Repeated invalid assigns when the order is already taken"
+    ],
+    "success_criteria": "Deliver every order on time with zero invalid actions."
+  },
+  {
+    "name": "weekday_lunch_simple_seed98262",
+    "difficulty": "easy",
+    "theme": "Weekday lunch in a single neighborhood",
+    "description": "A handful of food orders during a quiet weekday lunch. Restaurants are responsive, deadlines are loose, no traffic surprises. The dispatcher should learn the basic assign-then-deliver loop here.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 98262,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 2,
+    "num_orders": 4,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Dispatcher idles couriers instead of pre-positioning at the store",
+      "Repeated invalid assigns when the order is already taken"
+    ],
+    "success_criteria": "Deliver every order on time with zero invalid actions."
+  },
+  {
+    "name": "campus_quiet_afternoon_seed69240",
+    "difficulty": "easy",
+    "theme": "Campus afternoon, light load",
+    "description": "Late-afternoon orders around a small campus. Two couriers, three orders, everyone visible from t=0. The teaching value here is courier load balance: one courier should not take all three orders sequentially.",
+    "skill_focus": [
+      "courier_load_balance"
+    ],
+    "seed": 69240,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Single courier hoards all assignments while the other idles",
+      "Fairness penalty accrues unnoticed"
+    ],
+    "success_criteria": "Both couriers deliver at least one order; reward exceeds 8."
+  },
+  {
+    "name": "weekday_lunch_simple_seed91252",
+    "difficulty": "easy",
+    "theme": "Weekday lunch in a single neighborhood",
+    "description": "A handful of food orders during a quiet weekday lunch. Restaurants are responsive, deadlines are loose, no traffic surprises. The dispatcher should learn the basic assign-then-deliver loop here.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 91252,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Dispatcher idles couriers instead of pre-positioning at the store",
+      "Repeated invalid assigns when the order is already taken"
+    ],
+    "success_criteria": "Deliver every order on time with zero invalid actions."
+  },
+  {
+    "name": "suburban_steady_state_seed83420",
+    "difficulty": "easy",
+    "theme": "Suburban steady state",
+    "description": "Suburban afternoon with light, predictable load. Mostly grocery orders. Tests the agent's ability to read a clean dashboard and act decisively without overthinking.",
+    "skill_focus": [
+      "prep_uncertainty"
+    ],
+    "seed": 83420,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 2,
+    "num_orders": 3,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": false,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Excessive 'hold' actions while waiting for prep to complete"
+    ],
+    "success_criteria": "All orders delivered within 16 ticks."
+  },
+  {
+    "name": "weekend_grocery_morning_seed26204",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 26204,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.15,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "friday_evening_pickup_seed61898",
+    "difficulty": "medium",
+    "theme": "Friday evening tight prep",
+    "description": "Friday evening: stores are slow, deadlines are tight, but traffic is manageable. Orders arrive in two waves. Tests prep-aware scheduling: when to push 'hold' vs. when to send a courier early.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 61898,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.16,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Deadlines slip because the agent waits too long to dispatch",
+      "Idle penalty accrues from over-cautious holds"
+    ],
+    "success_criteria": "Total reward > 6; at most 1 expired order."
+  },
+  {
+    "name": "friday_evening_pickup_seed47794",
+    "difficulty": "medium",
+    "theme": "Friday evening tight prep",
+    "description": "Friday evening: stores are slow, deadlines are tight, but traffic is manageable. Orders arrive in two waves. Tests prep-aware scheduling: when to push 'hold' vs. when to send a courier early.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 47794,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.09,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Deadlines slip because the agent waits too long to dispatch",
+      "Idle penalty accrues from over-cautious holds"
+    ],
+    "success_criteria": "Total reward > 6; at most 1 expired order."
+  },
+  {
+    "name": "friday_evening_pickup_seed26788",
+    "difficulty": "medium",
+    "theme": "Friday evening tight prep",
+    "description": "Friday evening: stores are slow, deadlines are tight, but traffic is manageable. Orders arrive in two waves. Tests prep-aware scheduling: when to push 'hold' vs. when to send a courier early.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 26788,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.16,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Deadlines slip because the agent waits too long to dispatch",
+      "Idle penalty accrues from over-cautious holds"
+    ],
+    "success_criteria": "Total reward > 6; at most 1 expired order."
+  },
+  {
+    "name": "downtown_dinner_kickoff_seed86585",
+    "difficulty": "medium",
+    "theme": "Downtown dinner kickoff with rolling arrivals",
+    "description": "Dinner service is starting and orders trickle in over the first half of the shift. Light traffic noise. Tests whether the agent can keep planning as new orders appear instead of locking in a route at t=0.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 86585,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.18,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Agent assigns all current orders early and idles when new ones arrive",
+      "Late deliveries on orders that arrived mid-shift"
+    ],
+    "success_criteria": "At least 80% on-time deliveries despite rolling arrivals."
+  },
+  {
+    "name": "brunch_clustered_arrivals_seed83342",
+    "difficulty": "medium",
+    "theme": "Sunday brunch with bursty arrivals",
+    "description": "Sunday brunch: orders cluster around two narrow time windows rather than spreading evenly. Mostly easy travel, mild traffic. Trains the agent to handle bursts without panic-assigning everything at once.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 83342,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.1,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Burst-assigns 4 orders to one courier while others idle",
+      "Route churn from late re-balancing"
+    ],
+    "success_criteria": "Fairness imbalance \u2264 1; route churn penalty \u2264 0.5 total."
+  },
+  {
+    "name": "downtown_dinner_kickoff_seed95001",
+    "difficulty": "medium",
+    "theme": "Downtown dinner kickoff with rolling arrivals",
+    "description": "Dinner service is starting and orders trickle in over the first half of the shift. Light traffic noise. Tests whether the agent can keep planning as new orders appear instead of locking in a route at t=0.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 95001,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.03,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Agent assigns all current orders early and idles when new ones arrive",
+      "Late deliveries on orders that arrived mid-shift"
+    ],
+    "success_criteria": "At least 80% on-time deliveries despite rolling arrivals."
+  },
+  {
+    "name": "brunch_clustered_arrivals_seed85965",
+    "difficulty": "medium",
+    "theme": "Sunday brunch with bursty arrivals",
+    "description": "Sunday brunch: orders cluster around two narrow time windows rather than spreading evenly. Mostly easy travel, mild traffic. Trains the agent to handle bursts without panic-assigning everything at once.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 85965,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.14,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Burst-assigns 4 orders to one courier while others idle",
+      "Route churn from late re-balancing"
+    ],
+    "success_criteria": "Fairness imbalance \u2264 1; route churn penalty \u2264 0.5 total."
+  },
+  {
+    "name": "weekend_grocery_morning_seed2805",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 2805,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.15,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "weekend_grocery_morning_seed27662",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 27662,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.08,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "friday_evening_pickup_seed33996",
+    "difficulty": "medium",
+    "theme": "Friday evening tight prep",
+    "description": "Friday evening: stores are slow, deadlines are tight, but traffic is manageable. Orders arrive in two waves. Tests prep-aware scheduling: when to push 'hold' vs. when to send a courier early.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 33996,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.18,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Deadlines slip because the agent waits too long to dispatch",
+      "Idle penalty accrues from over-cautious holds"
+    ],
+    "success_criteria": "Total reward > 6; at most 1 expired order."
+  },
+  {
+    "name": "friday_evening_pickup_seed60053",
+    "difficulty": "medium",
+    "theme": "Friday evening tight prep",
+    "description": "Friday evening: stores are slow, deadlines are tight, but traffic is manageable. Orders arrive in two waves. Tests prep-aware scheduling: when to push 'hold' vs. when to send a courier early.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 60053,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.1,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Deadlines slip because the agent waits too long to dispatch",
+      "Idle penalty accrues from over-cautious holds"
+    ],
+    "success_criteria": "Total reward > 6; at most 1 expired order."
+  },
+  {
+    "name": "downtown_dinner_kickoff_seed57689",
+    "difficulty": "medium",
+    "theme": "Downtown dinner kickoff with rolling arrivals",
+    "description": "Dinner service is starting and orders trickle in over the first half of the shift. Light traffic noise. Tests whether the agent can keep planning as new orders appear instead of locking in a route at t=0.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 57689,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.03,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Agent assigns all current orders early and idles when new ones arrive",
+      "Late deliveries on orders that arrived mid-shift"
+    ],
+    "success_criteria": "At least 80% on-time deliveries despite rolling arrivals."
+  },
+  {
+    "name": "downtown_dinner_kickoff_seed72939",
+    "difficulty": "medium",
+    "theme": "Downtown dinner kickoff with rolling arrivals",
+    "description": "Dinner service is starting and orders trickle in over the first half of the shift. Light traffic noise. Tests whether the agent can keep planning as new orders appear instead of locking in a route at t=0.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 72939,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.18,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Agent assigns all current orders early and idles when new ones arrive",
+      "Late deliveries on orders that arrived mid-shift"
+    ],
+    "success_criteria": "At least 80% on-time deliveries despite rolling arrivals."
+  },
+  {
+    "name": "downtown_dinner_kickoff_seed32571",
+    "difficulty": "medium",
+    "theme": "Downtown dinner kickoff with rolling arrivals",
+    "description": "Dinner service is starting and orders trickle in over the first half of the shift. Light traffic noise. Tests whether the agent can keep planning as new orders appear instead of locking in a route at t=0.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 32571,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.1,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Agent assigns all current orders early and idles when new ones arrive",
+      "Late deliveries on orders that arrived mid-shift"
+    ],
+    "success_criteria": "At least 80% on-time deliveries despite rolling arrivals."
+  },
+  {
+    "name": "downtown_dinner_kickoff_seed99614",
+    "difficulty": "medium",
+    "theme": "Downtown dinner kickoff with rolling arrivals",
+    "description": "Dinner service is starting and orders trickle in over the first half of the shift. Light traffic noise. Tests whether the agent can keep planning as new orders appear instead of locking in a route at t=0.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 99614,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.14,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Agent assigns all current orders early and idles when new ones arrive",
+      "Late deliveries on orders that arrived mid-shift"
+    ],
+    "success_criteria": "At least 80% on-time deliveries despite rolling arrivals."
+  },
+  {
+    "name": "brunch_clustered_arrivals_seed66606",
+    "difficulty": "medium",
+    "theme": "Sunday brunch with bursty arrivals",
+    "description": "Sunday brunch: orders cluster around two narrow time windows rather than spreading evenly. Mostly easy travel, mild traffic. Trains the agent to handle bursts without panic-assigning everything at once.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 66606,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.23,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Burst-assigns 4 orders to one courier while others idle",
+      "Route churn from late re-balancing"
+    ],
+    "success_criteria": "Fairness imbalance \u2264 1; route churn penalty \u2264 0.5 total."
+  },
+  {
+    "name": "weekend_grocery_morning_seed58659",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 58659,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.07,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "downtown_dinner_kickoff_seed87970",
+    "difficulty": "medium",
+    "theme": "Downtown dinner kickoff with rolling arrivals",
+    "description": "Dinner service is starting and orders trickle in over the first half of the shift. Light traffic noise. Tests whether the agent can keep planning as new orders appear instead of locking in a route at t=0.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 87970,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.13,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Agent assigns all current orders early and idles when new ones arrive",
+      "Late deliveries on orders that arrived mid-shift"
+    ],
+    "success_criteria": "At least 80% on-time deliveries despite rolling arrivals."
+  },
+  {
+    "name": "downtown_dinner_kickoff_seed20244",
+    "difficulty": "medium",
+    "theme": "Downtown dinner kickoff with rolling arrivals",
+    "description": "Dinner service is starting and orders trickle in over the first half of the shift. Light traffic noise. Tests whether the agent can keep planning as new orders appear instead of locking in a route at t=0.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 20244,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.19,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Agent assigns all current orders early and idles when new ones arrive",
+      "Late deliveries on orders that arrived mid-shift"
+    ],
+    "success_criteria": "At least 80% on-time deliveries despite rolling arrivals."
+  },
+  {
+    "name": "weekend_grocery_morning_seed97870",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 97870,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.15,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "weekend_grocery_morning_seed21164",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 21164,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.06,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "friday_evening_pickup_seed41750",
+    "difficulty": "medium",
+    "theme": "Friday evening tight prep",
+    "description": "Friday evening: stores are slow, deadlines are tight, but traffic is manageable. Orders arrive in two waves. Tests prep-aware scheduling: when to push 'hold' vs. when to send a courier early.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 41750,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.11,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Deadlines slip because the agent waits too long to dispatch",
+      "Idle penalty accrues from over-cautious holds"
+    ],
+    "success_criteria": "Total reward > 6; at most 1 expired order."
+  },
+  {
+    "name": "brunch_clustered_arrivals_seed92164",
+    "difficulty": "medium",
+    "theme": "Sunday brunch with bursty arrivals",
+    "description": "Sunday brunch: orders cluster around two narrow time windows rather than spreading evenly. Mostly easy travel, mild traffic. Trains the agent to handle bursts without panic-assigning everything at once.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 92164,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.13,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Burst-assigns 4 orders to one courier while others idle",
+      "Route churn from late re-balancing"
+    ],
+    "success_criteria": "Fairness imbalance \u2264 1; route churn penalty \u2264 0.5 total."
+  },
+  {
+    "name": "downtown_dinner_kickoff_seed14792",
+    "difficulty": "medium",
+    "theme": "Downtown dinner kickoff with rolling arrivals",
+    "description": "Dinner service is starting and orders trickle in over the first half of the shift. Light traffic noise. Tests whether the agent can keep planning as new orders appear instead of locking in a route at t=0.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 14792,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.05,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Agent assigns all current orders early and idles when new ones arrive",
+      "Late deliveries on orders that arrived mid-shift"
+    ],
+    "success_criteria": "At least 80% on-time deliveries despite rolling arrivals."
+  },
+  {
+    "name": "weekend_grocery_morning_seed35448",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 35448,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.02,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "brunch_clustered_arrivals_seed91806",
+    "difficulty": "medium",
+    "theme": "Sunday brunch with bursty arrivals",
+    "description": "Sunday brunch: orders cluster around two narrow time windows rather than spreading evenly. Mostly easy travel, mild traffic. Trains the agent to handle bursts without panic-assigning everything at once.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 91806,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.2,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Burst-assigns 4 orders to one courier while others idle",
+      "Route churn from late re-balancing"
+    ],
+    "success_criteria": "Fairness imbalance \u2264 1; route churn penalty \u2264 0.5 total."
+  },
+  {
+    "name": "weekend_grocery_morning_seed55748",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 55748,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.12,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "downtown_dinner_kickoff_seed79716",
+    "difficulty": "medium",
+    "theme": "Downtown dinner kickoff with rolling arrivals",
+    "description": "Dinner service is starting and orders trickle in over the first half of the shift. Light traffic noise. Tests whether the agent can keep planning as new orders appear instead of locking in a route at t=0.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 79716,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.09,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Agent assigns all current orders early and idles when new ones arrive",
+      "Late deliveries on orders that arrived mid-shift"
+    ],
+    "success_criteria": "At least 80% on-time deliveries despite rolling arrivals."
+  },
+  {
+    "name": "friday_evening_pickup_seed72492",
+    "difficulty": "medium",
+    "theme": "Friday evening tight prep",
+    "description": "Friday evening: stores are slow, deadlines are tight, but traffic is manageable. Orders arrive in two waves. Tests prep-aware scheduling: when to push 'hold' vs. when to send a courier early.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 72492,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.11,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Deadlines slip because the agent waits too long to dispatch",
+      "Idle penalty accrues from over-cautious holds"
+    ],
+    "success_criteria": "Total reward > 6; at most 1 expired order."
+  },
+  {
+    "name": "weekend_grocery_morning_seed14347",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 14347,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.03,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "friday_evening_pickup_seed82402",
+    "difficulty": "medium",
+    "theme": "Friday evening tight prep",
+    "description": "Friday evening: stores are slow, deadlines are tight, but traffic is manageable. Orders arrive in two waves. Tests prep-aware scheduling: when to push 'hold' vs. when to send a courier early.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 82402,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.1,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Deadlines slip because the agent waits too long to dispatch",
+      "Idle penalty accrues from over-cautious holds"
+    ],
+    "success_criteria": "Total reward > 6; at most 1 expired order."
+  },
+  {
+    "name": "weekend_grocery_morning_seed35458",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 35458,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.0,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "weekend_grocery_morning_seed67402",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 67402,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.1,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "brunch_clustered_arrivals_seed86051",
+    "difficulty": "medium",
+    "theme": "Sunday brunch with bursty arrivals",
+    "description": "Sunday brunch: orders cluster around two narrow time windows rather than spreading evenly. Mostly easy travel, mild traffic. Trains the agent to handle bursts without panic-assigning everything at once.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 86051,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.25,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Burst-assigns 4 orders to one courier while others idle",
+      "Route churn from late re-balancing"
+    ],
+    "success_criteria": "Fairness imbalance \u2264 1; route churn penalty \u2264 0.5 total."
+  },
+  {
+    "name": "friday_evening_pickup_seed26035",
+    "difficulty": "medium",
+    "theme": "Friday evening tight prep",
+    "description": "Friday evening: stores are slow, deadlines are tight, but traffic is manageable. Orders arrive in two waves. Tests prep-aware scheduling: when to push 'hold' vs. when to send a courier early.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 26035,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.2,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Deadlines slip because the agent waits too long to dispatch",
+      "Idle penalty accrues from over-cautious holds"
+    ],
+    "success_criteria": "Total reward > 6; at most 1 expired order."
+  },
+  {
+    "name": "weekend_grocery_morning_seed1869",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 1869,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 3,
+    "num_orders": 6,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.01,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "brunch_clustered_arrivals_seed66315",
+    "difficulty": "medium",
+    "theme": "Sunday brunch with bursty arrivals",
+    "description": "Sunday brunch: orders cluster around two narrow time windows rather than spreading evenly. Mostly easy travel, mild traffic. Trains the agent to handle bursts without panic-assigning everything at once.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 66315,
+    "mode": "normal",
+    "max_ticks": 20,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.01,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Burst-assigns 4 orders to one courier while others idle",
+      "Route churn from late re-balancing"
+    ],
+    "success_criteria": "Fairness imbalance \u2264 1; route churn penalty \u2264 0.5 total."
+  },
+  {
+    "name": "weekend_grocery_morning_seed20649",
+    "difficulty": "medium",
+    "theme": "Weekend grocery morning surge",
+    "description": "Saturday morning grocery surge: orders trickle in over the shift, deadlines are loose-ish but prep takes longer than expected because stores are batching. Light traffic only on a couple of edges.",
+    "skill_focus": [
+      "rolling_arrivals",
+      "prep_uncertainty"
+    ],
+    "seed": 20649,
+    "mode": "normal",
+    "max_ticks": 19,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "easy",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.05,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Assigns courier to a queued order whose prep timer is still high",
+      "Underuses 'reposition' to pre-stage couriers near busy stores"
+    ],
+    "success_criteria": "At least 4 of 5 orders delivered, fairness within 1."
+  },
+  {
+    "name": "friday_evening_pickup_seed71707",
+    "difficulty": "medium",
+    "theme": "Friday evening tight prep",
+    "description": "Friday evening: stores are slow, deadlines are tight, but traffic is manageable. Orders arrive in two waves. Tests prep-aware scheduling: when to push 'hold' vs. when to send a courier early.",
+    "skill_focus": [
+      "prep_uncertainty",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 71707,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 3,
+    "num_orders": 5,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.04,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Deadlines slip because the agent waits too long to dispatch",
+      "Idle penalty accrues from over-cautious holds"
+    ],
+    "success_criteria": "Total reward > 6; at most 1 expired order."
+  },
+  {
+    "name": "marathon_route_diversion_seed141",
+    "difficulty": "hard",
+    "theme": "Marathon-day cross-town diversion",
+    "description": "A road closure scrambles travel times on most cross-town edges, and one customer is far from every store (long-tail). The agent must decide whether to dedicate a courier to that outlier or skip it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals"
+    ],
+    "seed": 141,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 4,
+    "num_orders": 7,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.46,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Wastes the only fast courier on the long-tail customer",
+      "Long-tail order expires while agent over-optimizes the cluster"
+    ],
+    "success_criteria": "Long-tail order delivered OR explicitly deprioritized; cluster orders all delivered."
+  },
+  {
+    "name": "blackout_recovery_seed26343",
+    "difficulty": "hard",
+    "theme": "Post-blackout recovery, tight everything",
+    "description": "Recovering from an outage: tight deadlines, traffic is heavy because signals are out, orders backlogged so they arrive in two big waves. Tests whether the dispatcher can prioritize under cascade pressure.",
+    "skill_focus": [
+      "deadline_pressure",
+      "traffic_noise",
+      "rolling_arrivals"
+    ],
+    "seed": 26343,
+    "mode": "normal",
+    "max_ticks": 14,
+    "num_couriers": 4,
+    "num_orders": 8,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.66,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Tries to deliver everything, ends up delivering nothing on time",
+      "No 'prioritize' signal sent; dispatcher just reacts"
+    ],
+    "success_criteria": "At least 60% on-time; clear prioritization pattern in trace."
+  },
+  {
+    "name": "marathon_route_diversion_seed52365",
+    "difficulty": "hard",
+    "theme": "Marathon-day cross-town diversion",
+    "description": "A road closure scrambles travel times on most cross-town edges, and one customer is far from every store (long-tail). The agent must decide whether to dedicate a courier to that outlier or skip it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals"
+    ],
+    "seed": 52365,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 4,
+    "num_orders": 8,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.46,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Wastes the only fast courier on the long-tail customer",
+      "Long-tail order expires while agent over-optimizes the cluster"
+    ],
+    "success_criteria": "Long-tail order delivered OR explicitly deprioritized; cluster orders all delivered."
+  },
+  {
+    "name": "blackout_recovery_seed30515",
+    "difficulty": "hard",
+    "theme": "Post-blackout recovery, tight everything",
+    "description": "Recovering from an outage: tight deadlines, traffic is heavy because signals are out, orders backlogged so they arrive in two big waves. Tests whether the dispatcher can prioritize under cascade pressure.",
+    "skill_focus": [
+      "deadline_pressure",
+      "traffic_noise",
+      "rolling_arrivals"
+    ],
+    "seed": 30515,
+    "mode": "normal",
+    "max_ticks": 14,
+    "num_couriers": 4,
+    "num_orders": 9,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.64,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Tries to deliver everything, ends up delivering nothing on time",
+      "No 'prioritize' signal sent; dispatcher just reacts"
+    ],
+    "success_criteria": "At least 60% on-time; clear prioritization pattern in trace."
+  },
+  {
+    "name": "holiday_eve_chaos_seed19591",
+    "difficulty": "hard",
+    "theme": "Holiday eve chaos: long-tail + heavy traffic",
+    "description": "Holiday eve everything-at-once: long-tail customer mix, heavy traffic, rolling arrivals across the whole shift, max courier count. The hardest anchor \u2014 only consistent strong dispatchers should solve it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 19591,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 5,
+    "num_orders": 8,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.72,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Multiple expired orders due to late assignment under traffic shocks",
+      "Route churn explodes as the agent reassigns under uncertainty"
+    ],
+    "success_criteria": "At least 50% delivered; non-trivial reward; no more than 2 expired."
+  },
+  {
+    "name": "fog_morning_delays_seed18260",
+    "difficulty": "hard",
+    "theme": "Foggy morning, shifted prep priors",
+    "description": "Foggy morning: prep distributions are shifted (everything starts at 2-4 ticks), traffic is moderate, orders arrive over the shift. OOD-flavor scenario \u2014 the agent's prior on prep is wrong and must adapt.",
+    "skill_focus": [
+      "shifted_distribution",
+      "prep_uncertainty",
+      "traffic_noise"
+    ],
+    "seed": 18260,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 4,
+    "num_orders": 7,
+    "scenario_bucket": "shifted_distribution",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.31,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Sends couriers to pickup too early; they idle waiting for prep",
+      "Misses deadlines because prep is longer than expected"
+    ],
+    "success_criteria": "At least 60% delivered on time; idle penalty bounded."
+  },
+  {
+    "name": "marathon_route_diversion_seed83509",
+    "difficulty": "hard",
+    "theme": "Marathon-day cross-town diversion",
+    "description": "A road closure scrambles travel times on most cross-town edges, and one customer is far from every store (long-tail). The agent must decide whether to dedicate a courier to that outlier or skip it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals"
+    ],
+    "seed": 83509,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 4,
+    "num_orders": 8,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.51,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Wastes the only fast courier on the long-tail customer",
+      "Long-tail order expires while agent over-optimizes the cluster"
+    ],
+    "success_criteria": "Long-tail order delivered OR explicitly deprioritized; cluster orders all delivered."
+  },
+  {
+    "name": "blackout_recovery_seed2470",
+    "difficulty": "hard",
+    "theme": "Post-blackout recovery, tight everything",
+    "description": "Recovering from an outage: tight deadlines, traffic is heavy because signals are out, orders backlogged so they arrive in two big waves. Tests whether the dispatcher can prioritize under cascade pressure.",
+    "skill_focus": [
+      "deadline_pressure",
+      "traffic_noise",
+      "rolling_arrivals"
+    ],
+    "seed": 2470,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 4,
+    "num_orders": 9,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.5,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Tries to deliver everything, ends up delivering nothing on time",
+      "No 'prioritize' signal sent; dispatcher just reacts"
+    ],
+    "success_criteria": "At least 60% on-time; clear prioritization pattern in trace."
+  },
+  {
+    "name": "rainy_rush_hour_seed98077",
+    "difficulty": "hard",
+    "theme": "Rainy rush hour, tight SLAs",
+    "description": "Rainy rush hour. Deadlines are tight, traffic is unpredictable across every cross-town edge, and orders keep arriving. The dispatcher must absorb traffic blow-ups without spiraling into reroute churn.",
+    "skill_focus": [
+      "traffic_noise",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 98077,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 4,
+    "num_orders": 7,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.48,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Repeated reposition+reassign cycles as ETAs slip",
+      "Cascading expirations once one courier gets stuck"
+    ],
+    "success_criteria": "At least 60% on-time despite traffic; route churn \u2264 1.0."
+  },
+  {
+    "name": "rainy_rush_hour_seed34808",
+    "difficulty": "hard",
+    "theme": "Rainy rush hour, tight SLAs",
+    "description": "Rainy rush hour. Deadlines are tight, traffic is unpredictable across every cross-town edge, and orders keep arriving. The dispatcher must absorb traffic blow-ups without spiraling into reroute churn.",
+    "skill_focus": [
+      "traffic_noise",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 34808,
+    "mode": "normal",
+    "max_ticks": 14,
+    "num_couriers": 4,
+    "num_orders": 7,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.55,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Repeated reposition+reassign cycles as ETAs slip",
+      "Cascading expirations once one courier gets stuck"
+    ],
+    "success_criteria": "At least 60% on-time despite traffic; route churn \u2264 1.0."
+  },
+  {
+    "name": "holiday_eve_chaos_seed10059",
+    "difficulty": "hard",
+    "theme": "Holiday eve chaos: long-tail + heavy traffic",
+    "description": "Holiday eve everything-at-once: long-tail customer mix, heavy traffic, rolling arrivals across the whole shift, max courier count. The hardest anchor \u2014 only consistent strong dispatchers should solve it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 10059,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 5,
+    "num_orders": 8,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.52,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Multiple expired orders due to late assignment under traffic shocks",
+      "Route churn explodes as the agent reassigns under uncertainty"
+    ],
+    "success_criteria": "At least 50% delivered; non-trivial reward; no more than 2 expired."
+  },
+  {
+    "name": "marathon_route_diversion_seed43487",
+    "difficulty": "hard",
+    "theme": "Marathon-day cross-town diversion",
+    "description": "A road closure scrambles travel times on most cross-town edges, and one customer is far from every store (long-tail). The agent must decide whether to dedicate a courier to that outlier or skip it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals"
+    ],
+    "seed": 43487,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 4,
+    "num_orders": 7,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.5,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Wastes the only fast courier on the long-tail customer",
+      "Long-tail order expires while agent over-optimizes the cluster"
+    ],
+    "success_criteria": "Long-tail order delivered OR explicitly deprioritized; cluster orders all delivered."
+  },
+  {
+    "name": "holiday_eve_chaos_seed35229",
+    "difficulty": "hard",
+    "theme": "Holiday eve chaos: long-tail + heavy traffic",
+    "description": "Holiday eve everything-at-once: long-tail customer mix, heavy traffic, rolling arrivals across the whole shift, max courier count. The hardest anchor \u2014 only consistent strong dispatchers should solve it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 35229,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 5,
+    "num_orders": 10,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.7,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Multiple expired orders due to late assignment under traffic shocks",
+      "Route churn explodes as the agent reassigns under uncertainty"
+    ],
+    "success_criteria": "At least 50% delivered; non-trivial reward; no more than 2 expired."
+  },
+  {
+    "name": "stadium_post_game_spike_seed92914",
+    "difficulty": "hard",
+    "theme": "Stadium post-game spike",
+    "description": "Heavy load: 9-10 orders, 5 couriers, shifted prep distribution (everything takes 2-4 ticks). Traffic is moderate. Trains the agent to coordinate 5 couriers without piling assignments on the closest one.",
+    "skill_focus": [
+      "courier_load_balance",
+      "shifted_distribution",
+      "rolling_arrivals"
+    ],
+    "seed": 92914,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 5,
+    "num_orders": 10,
+    "scenario_bucket": "shifted_distribution",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.29,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Two couriers get 4 orders each while two idle",
+      "Fairness penalty dominates the reward"
+    ],
+    "success_criteria": "Each courier delivers \u2265 1 order; fairness imbalance \u2264 2."
+  },
+  {
+    "name": "rainy_rush_hour_seed71969",
+    "difficulty": "hard",
+    "theme": "Rainy rush hour, tight SLAs",
+    "description": "Rainy rush hour. Deadlines are tight, traffic is unpredictable across every cross-town edge, and orders keep arriving. The dispatcher must absorb traffic blow-ups without spiraling into reroute churn.",
+    "skill_focus": [
+      "traffic_noise",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 71969,
+    "mode": "normal",
+    "max_ticks": 14,
+    "num_couriers": 4,
+    "num_orders": 7,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.41,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Repeated reposition+reassign cycles as ETAs slip",
+      "Cascading expirations once one courier gets stuck"
+    ],
+    "success_criteria": "At least 60% on-time despite traffic; route churn \u2264 1.0."
+  },
+  {
+    "name": "holiday_eve_chaos_seed10023",
+    "difficulty": "hard",
+    "theme": "Holiday eve chaos: long-tail + heavy traffic",
+    "description": "Holiday eve everything-at-once: long-tail customer mix, heavy traffic, rolling arrivals across the whole shift, max courier count. The hardest anchor \u2014 only consistent strong dispatchers should solve it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 10023,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 5,
+    "num_orders": 9,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.56,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Multiple expired orders due to late assignment under traffic shocks",
+      "Route churn explodes as the agent reassigns under uncertainty"
+    ],
+    "success_criteria": "At least 50% delivered; non-trivial reward; no more than 2 expired."
+  },
+  {
+    "name": "marathon_route_diversion_seed9780",
+    "difficulty": "hard",
+    "theme": "Marathon-day cross-town diversion",
+    "description": "A road closure scrambles travel times on most cross-town edges, and one customer is far from every store (long-tail). The agent must decide whether to dedicate a courier to that outlier or skip it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals"
+    ],
+    "seed": 9780,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 4,
+    "num_orders": 7,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.59,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Wastes the only fast courier on the long-tail customer",
+      "Long-tail order expires while agent over-optimizes the cluster"
+    ],
+    "success_criteria": "Long-tail order delivered OR explicitly deprioritized; cluster orders all delivered."
+  },
+  {
+    "name": "marathon_route_diversion_seed79085",
+    "difficulty": "hard",
+    "theme": "Marathon-day cross-town diversion",
+    "description": "A road closure scrambles travel times on most cross-town edges, and one customer is far from every store (long-tail). The agent must decide whether to dedicate a courier to that outlier or skip it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals"
+    ],
+    "seed": 79085,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 4,
+    "num_orders": 7,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.45,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Wastes the only fast courier on the long-tail customer",
+      "Long-tail order expires while agent over-optimizes the cluster"
+    ],
+    "success_criteria": "Long-tail order delivered OR explicitly deprioritized; cluster orders all delivered."
+  },
+  {
+    "name": "holiday_eve_chaos_seed51653",
+    "difficulty": "hard",
+    "theme": "Holiday eve chaos: long-tail + heavy traffic",
+    "description": "Holiday eve everything-at-once: long-tail customer mix, heavy traffic, rolling arrivals across the whole shift, max courier count. The hardest anchor \u2014 only consistent strong dispatchers should solve it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 51653,
+    "mode": "normal",
+    "max_ticks": 15,
+    "num_couriers": 5,
+    "num_orders": 8,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.7,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Multiple expired orders due to late assignment under traffic shocks",
+      "Route churn explodes as the agent reassigns under uncertainty"
+    ],
+    "success_criteria": "At least 50% delivered; non-trivial reward; no more than 2 expired."
+  },
+  {
+    "name": "holiday_eve_chaos_seed39578",
+    "difficulty": "hard",
+    "theme": "Holiday eve chaos: long-tail + heavy traffic",
+    "description": "Holiday eve everything-at-once: long-tail customer mix, heavy traffic, rolling arrivals across the whole shift, max courier count. The hardest anchor \u2014 only consistent strong dispatchers should solve it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 39578,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 5,
+    "num_orders": 9,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.61,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Multiple expired orders due to late assignment under traffic shocks",
+      "Route churn explodes as the agent reassigns under uncertainty"
+    ],
+    "success_criteria": "At least 50% delivered; non-trivial reward; no more than 2 expired."
+  },
+  {
+    "name": "rainy_rush_hour_seed43428",
+    "difficulty": "hard",
+    "theme": "Rainy rush hour, tight SLAs",
+    "description": "Rainy rush hour. Deadlines are tight, traffic is unpredictable across every cross-town edge, and orders keep arriving. The dispatcher must absorb traffic blow-ups without spiraling into reroute churn.",
+    "skill_focus": [
+      "traffic_noise",
+      "deadline_pressure",
+      "rolling_arrivals"
+    ],
+    "seed": 43428,
+    "mode": "normal",
+    "max_ticks": 14,
+    "num_couriers": 4,
+    "num_orders": 8,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.44,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Repeated reposition+reassign cycles as ETAs slip",
+      "Cascading expirations once one courier gets stuck"
+    ],
+    "success_criteria": "At least 60% on-time despite traffic; route churn \u2264 1.0."
+  },
+  {
+    "name": "marathon_route_diversion_seed93458",
+    "difficulty": "hard",
+    "theme": "Marathon-day cross-town diversion",
+    "description": "A road closure scrambles travel times on most cross-town edges, and one customer is far from every store (long-tail). The agent must decide whether to dedicate a courier to that outlier or skip it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals"
+    ],
+    "seed": 93458,
+    "mode": "normal",
+    "max_ticks": 15,
+    "num_couriers": 4,
+    "num_orders": 8,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.41,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Wastes the only fast courier on the long-tail customer",
+      "Long-tail order expires while agent over-optimizes the cluster"
+    ],
+    "success_criteria": "Long-tail order delivered OR explicitly deprioritized; cluster orders all delivered."
+  },
+  {
+    "name": "holiday_eve_chaos_seed77225",
+    "difficulty": "hard",
+    "theme": "Holiday eve chaos: long-tail + heavy traffic",
+    "description": "Holiday eve everything-at-once: long-tail customer mix, heavy traffic, rolling arrivals across the whole shift, max courier count. The hardest anchor \u2014 only consistent strong dispatchers should solve it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 77225,
+    "mode": "normal",
+    "max_ticks": 15,
+    "num_couriers": 5,
+    "num_orders": 9,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.76,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Multiple expired orders due to late assignment under traffic shocks",
+      "Route churn explodes as the agent reassigns under uncertainty"
+    ],
+    "success_criteria": "At least 50% delivered; non-trivial reward; no more than 2 expired."
+  },
+  {
+    "name": "stadium_post_game_spike_seed13332",
+    "difficulty": "hard",
+    "theme": "Stadium post-game spike",
+    "description": "Heavy load: 9-10 orders, 5 couriers, shifted prep distribution (everything takes 2-4 ticks). Traffic is moderate. Trains the agent to coordinate 5 couriers without piling assignments on the closest one.",
+    "skill_focus": [
+      "courier_load_balance",
+      "shifted_distribution",
+      "rolling_arrivals"
+    ],
+    "seed": 13332,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 5,
+    "num_orders": 9,
+    "scenario_bucket": "shifted_distribution",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.39,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Two couriers get 4 orders each while two idle",
+      "Fairness penalty dominates the reward"
+    ],
+    "success_criteria": "Each courier delivers \u2265 1 order; fairness imbalance \u2264 2."
+  },
+  {
+    "name": "holiday_eve_chaos_seed66973",
+    "difficulty": "hard",
+    "theme": "Holiday eve chaos: long-tail + heavy traffic",
+    "description": "Holiday eve everything-at-once: long-tail customer mix, heavy traffic, rolling arrivals across the whole shift, max courier count. The hardest anchor \u2014 only consistent strong dispatchers should solve it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 66973,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 5,
+    "num_orders": 9,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.77,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Multiple expired orders due to late assignment under traffic shocks",
+      "Route churn explodes as the agent reassigns under uncertainty"
+    ],
+    "success_criteria": "At least 50% delivered; non-trivial reward; no more than 2 expired."
+  },
+  {
+    "name": "blackout_recovery_seed52435",
+    "difficulty": "hard",
+    "theme": "Post-blackout recovery, tight everything",
+    "description": "Recovering from an outage: tight deadlines, traffic is heavy because signals are out, orders backlogged so they arrive in two big waves. Tests whether the dispatcher can prioritize under cascade pressure.",
+    "skill_focus": [
+      "deadline_pressure",
+      "traffic_noise",
+      "rolling_arrivals"
+    ],
+    "seed": 52435,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 4,
+    "num_orders": 8,
+    "scenario_bucket": "tight",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.69,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Tries to deliver everything, ends up delivering nothing on time",
+      "No 'prioritize' signal sent; dispatcher just reacts"
+    ],
+    "success_criteria": "At least 60% on-time; clear prioritization pattern in trace."
+  },
+  {
+    "name": "holiday_eve_chaos_seed59096",
+    "difficulty": "hard",
+    "theme": "Holiday eve chaos: long-tail + heavy traffic",
+    "description": "Holiday eve everything-at-once: long-tail customer mix, heavy traffic, rolling arrivals across the whole shift, max courier count. The hardest anchor \u2014 only consistent strong dispatchers should solve it.",
+    "skill_focus": [
+      "traffic_noise",
+      "long_tail_routing",
+      "rolling_arrivals",
+      "courier_load_balance"
+    ],
+    "seed": 59096,
+    "mode": "normal",
+    "max_ticks": 17,
+    "num_couriers": 5,
+    "num_orders": 10,
+    "scenario_bucket": "long_tail",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.65,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Multiple expired orders due to late assignment under traffic shocks",
+      "Route churn explodes as the agent reassigns under uncertainty"
+    ],
+    "success_criteria": "At least 50% delivered; non-trivial reward; no more than 2 expired."
+  },
+  {
+    "name": "fog_morning_delays_seed16687",
+    "difficulty": "hard",
+    "theme": "Foggy morning, shifted prep priors",
+    "description": "Foggy morning: prep distributions are shifted (everything starts at 2-4 ticks), traffic is moderate, orders arrive over the shift. OOD-flavor scenario \u2014 the agent's prior on prep is wrong and must adapt.",
+    "skill_focus": [
+      "shifted_distribution",
+      "prep_uncertainty",
+      "traffic_noise"
+    ],
+    "seed": 16687,
+    "mode": "normal",
+    "max_ticks": 15,
+    "num_couriers": 4,
+    "num_orders": 8,
+    "scenario_bucket": "shifted_distribution",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.36,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Sends couriers to pickup too early; they idle waiting for prep",
+      "Misses deadlines because prep is longer than expected"
+    ],
+    "success_criteria": "At least 60% delivered on time; idle penalty bounded."
+  },
+  {
+    "name": "stadium_post_game_spike_seed96867",
+    "difficulty": "hard",
+    "theme": "Stadium post-game spike",
+    "description": "Heavy load: 9-10 orders, 5 couriers, shifted prep distribution (everything takes 2-4 ticks). Traffic is moderate. Trains the agent to coordinate 5 couriers without piling assignments on the closest one.",
+    "skill_focus": [
+      "courier_load_balance",
+      "shifted_distribution",
+      "rolling_arrivals"
+    ],
+    "seed": 96867,
+    "mode": "normal",
+    "max_ticks": 18,
+    "num_couriers": 5,
+    "num_orders": 10,
+    "scenario_bucket": "shifted_distribution",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.26,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Two couriers get 4 orders each while two idle",
+      "Fairness penalty dominates the reward"
+    ],
+    "success_criteria": "Each courier delivers \u2265 1 order; fairness imbalance \u2264 2."
+  },
+  {
+    "name": "fog_morning_delays_seed87671",
+    "difficulty": "hard",
+    "theme": "Foggy morning, shifted prep priors",
+    "description": "Foggy morning: prep distributions are shifted (everything starts at 2-4 ticks), traffic is moderate, orders arrive over the shift. OOD-flavor scenario \u2014 the agent's prior on prep is wrong and must adapt.",
+    "skill_focus": [
+      "shifted_distribution",
+      "prep_uncertainty",
+      "traffic_noise"
+    ],
+    "seed": 87671,
+    "mode": "normal",
+    "max_ticks": 16,
+    "num_couriers": 4,
+    "num_orders": 7,
+    "scenario_bucket": "shifted_distribution",
+    "rolling_arrivals": true,
+    "traffic_noise": 0.32,
+    "visible_prep": false,
+    "expected_failure_modes": [
+      "Sends couriers to pickup too early; they idle waiting for prep",
+      "Misses deadlines because prep is longer than expected"
+    ],
+    "success_criteria": "At least 60% delivered on time; idle penalty bounded."
+  }
+]

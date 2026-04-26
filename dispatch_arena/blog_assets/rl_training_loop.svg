@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="840" viewBox="0 0 1200 840" role="img" aria-labelledby="title desc">
+  <title id="title">Dispatch Arena RL training loop</title>
+  <desc id="desc">Diagram showing Dispatch Arena training with a catalog dataset, Qwen policy, TRL GRPO trainer, tool-calling environment, FastAPI simulator, reward model, LoRA update, TensorBoard logs, and held-out evaluation.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fffaf0"/>
+      <stop offset="100%" stop-color="#edf7ff"/>
+    </linearGradient>
+    <linearGradient id="policy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e9f1ff"/>
+      <stop offset="100%" stop-color="#cfe2ff"/>
+    </linearGradient>
+    <linearGradient id="env" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ecfff4"/>
+      <stop offset="100%" stop-color="#c8f6db"/>
+    </linearGradient>
+    <linearGradient id="reward" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff3e6"/>
+      <stop offset="100%" stop-color="#ffd8ad"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#1f2937" flood-opacity="0.15"/>
+    </filter>
+    <marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#059669"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#ea580c"/>
+    </marker>
+    <style>
+      .title { font: 800 34px Inter, ui-sans-serif, system-ui, sans-serif; fill: #111827; }
+      .subtitle { font: 500 15px Inter, ui-sans-serif, system-ui, sans-serif; fill: #4b5563; }
+      .card-title { font: 800 19px Inter, ui-sans-serif, system-ui, sans-serif; fill: #111827; }
+      .card-subtitle { font: 700 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #374151; letter-spacing: .04em; }
+      .body { font: 500 14px Inter, ui-sans-serif, system-ui, sans-serif; fill: #374151; }
+      .mono { font: 700 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #1f2937; }
+      .small { font: 600 12px Inter, ui-sans-serif, system-ui, sans-serif; fill: #4b5563; }
+      .tiny { font: 600 11px Inter, ui-sans-serif, system-ui, sans-serif; fill: #6b7280; }
+      .card { stroke: #1f2937; stroke-width: 2; filter: url(#shadow); }
+      .arrow { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 14 10; animation: flow 1.3s linear infinite; }
+      .arrow-solid { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .arrow-thin { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 10 8; }
+      @keyframes flow { to { stroke-dashoffset: -24; } }
+    </style>
+  </defs>
+
+  <rect width="1200" height="840" rx="28" fill="url(#bg)"/>
+  <rect x="24" y="24" width="1152" height="792" rx="24" fill="none" stroke="#111827" stroke-width="3"/>
+
+  <text x="600" y="70" text-anchor="middle" class="title">Dispatch Arena RL Training Loop</text>
+  <text x="600" y="100" text-anchor="middle" class="subtitle">TRL GRPO trains a tool-calling Qwen policy against the same Dispatch Arena server used by replay and the demo UI.</text>
+
+  <!-- Dataset card -->
+  <rect x="60" y="145" width="300" height="184" rx="18" fill="#ffffff" class="card"/>
+  <text x="90" y="180" class="card-subtitle">1. SCENARIO DATA</text>
+  <text x="90" y="208" class="card-title">Catalog -> HF Dataset</text>
+  <text x="90" y="238" class="body">Stratified 70/30 train/eval split</text>
+  <text x="90" y="262" class="body">Each row has prompt, seed, config</text>
+  <text x="90" y="286" class="body">Difficulty tags stay out of prompt</text>
+  <text x="90" y="312" class="mono">normal mode + traffic noise</text>
+
+  <!-- Policy card -->
+  <rect x="450" y="145" width="300" height="184" rx="18" fill="url(#policy)" class="card"/>
+  <text x="480" y="180" class="card-subtitle">2. POLICY MODEL</text>
+  <text x="480" y="208" class="card-title">Qwen/Qwen3-1.7B</text>
+  <text x="480" y="238" class="body">Reads dashboard observations</text>
+  <text x="480" y="262" class="body">Outputs one tool call per turn</text>
+  <text x="480" y="286" class="body">Only LoRA weights are trained</text>
+  <text x="480" y="312" class="mono">r=16, alpha=32, dropout=.05</text>
+
+  <!-- Trainer card -->
+  <rect x="840" y="145" width="300" height="184" rx="18" fill="#f7f2ff" class="card"/>
+  <text x="870" y="180" class="card-subtitle">3. RL TRAINER</text>
+  <text x="870" y="208" class="card-title">TRL GRPOTrainer</text>
+  <text x="870" y="238" class="body">Samples grouped rollouts</text>
+  <text x="870" y="262" class="body">Scores each rollout by reward</text>
+  <text x="870" y="286" class="mono">num_generations=2</text>
+  <text x="870" y="312" class="mono">max_steps=50, lr=1e-5, fp16</text>
+
+  <!-- Tool env card -->
+  <rect x="810" y="430" width="330" height="190" rx="18" fill="#ffffff" class="card"/>
+  <text x="840" y="465" class="card-subtitle">4. TOOL WRAPPER</text>
+  <text x="840" y="493" class="card-title">DispatchToolEnv</text>
+  <text x="840" y="523" class="body">Exposes LLM-callable tools:</text>
+  <text x="840" y="549" class="mono">view_dashboard, assign</text>
+  <text x="840" y="572" class="mono">reposition, hold, prioritize</text>
+  <text x="840" y="596" class="small">Each tool sends one action to the server.</text>
+
+  <!-- Server env card -->
+  <rect x="435" y="430" width="330" height="190" rx="18" fill="url(#env)" class="card"/>
+  <text x="465" y="465" class="card-subtitle">5. SERVER-AUTHORITATIVE ENV</text>
+  <text x="465" y="493" class="card-title">FastAPI + Dispatch Arena</text>
+  <text x="465" y="523" class="body">reset / step / state / summary</text>
+  <text x="465" y="547" class="body">Hidden prep stays server-side</text>
+  <text x="465" y="571" class="body">Traffic noise + rolling arrivals</text>
+  <text x="465" y="595" class="body">Returns observation and reward</text>
+
+  <!-- Reward card -->
+  <rect x="60" y="430" width="330" height="190" rx="18" fill="url(#reward)" class="card"/>
+  <text x="90" y="465" class="card-subtitle">6. REWARD SIGNAL</text>
+  <text x="90" y="493" class="card-title">RewardBreakdown -> scalar</text>
+  <text x="90" y="523" class="body">Per-step components are summed:</text>
+  <text x="90" y="549" class="mono">success + on_time - late</text>
+  <text x="90" y="572" class="mono">- invalid - idle - churn</text>
+  <text x="90" y="596" class="small">GRPO receives reward_total per rollout.</text>
+
+  <!-- Output card -->
+  <rect x="300" y="690" width="600" height="64" rx="16" fill="#111827" opacity="0.94"/>
+  <text x="600" y="716" text-anchor="middle" fill="#ffffff" style="font: 800 17px Inter, ui-sans-serif, system-ui, sans-serif;">Saved adapter: scripts/_grpo_normal_out/final_lora</text>
+  <text x="600" y="738" text-anchor="middle" fill="#d1d5db" style="font: 600 12px Inter, ui-sans-serif, system-ui, sans-serif;">TensorBoard logs during training; held-out eval runs separately.</text>
+
+  <!-- Main flow arrows -->
+  <path d="M360 237 L450 237" class="arrow" stroke="#2563eb" marker-end="url(#arrow-blue)"/>
+  <path d="M750 237 L840 237" class="arrow" stroke="#2563eb" marker-end="url(#arrow-blue)"/>
+  <path d="M990 329 L990 430" class="arrow" stroke="#2563eb" marker-end="url(#arrow-blue)"/>
+  <path d="M810 525 L765 525" class="arrow" stroke="#059669" marker-end="url(#arrow-green)"/>
+  <path d="M435 525 L390 525" class="arrow" stroke="#ea580c" marker-end="url(#arrow-orange)"/>
+  <path d="M225 430 C225 370, 600 360, 975 430" class="arrow-thin" stroke="#7c3aed" marker-end="url(#arrow-blue)"/>
+
+  <!-- Flow labels -->
+  <rect x="372" y="206" width="70" height="28" rx="14" fill="#dbeafe" stroke="#93c5fd"/>
+  <text x="407" y="225" text-anchor="middle" class="small">prompt</text>
+  <rect x="762" y="206" width="66" height="28" rx="14" fill="#dbeafe" stroke="#93c5fd"/>
+  <text x="795" y="225" text-anchor="middle" class="small">policy</text>
+  <rect x="954" y="366" width="74" height="28" rx="14" fill="#dbeafe" stroke="#93c5fd"/>
+  <text x="991" y="385" text-anchor="middle" class="small">tool call</text>
+  <rect x="772" y="491" width="62" height="28" rx="14" fill="#dcfce7" stroke="#86efac"/>
+  <text x="803" y="510" text-anchor="middle" class="small">action</text>
+  <rect x="393" y="491" width="64" height="28" rx="14" fill="#ffedd5" stroke="#fdba74"/>
+  <text x="425" y="510" text-anchor="middle" class="small">reward</text>
+  <rect x="496" y="366" width="208" height="30" rx="15" fill="#f3e8ff" stroke="#c4b5fd"/>
+  <text x="600" y="386" text-anchor="middle" class="small">GRPO updates LoRA adapter</text>
+
+  <!-- Mini code footer -->
+  <text x="60" y="790" class="tiny">Code path: scripts/train_grpo.py -> catalog/dataset.py -> DispatchToolEnv -> DispatchArenaClient -> server/app.py -> server/env.py -> server/rewards.py</text>
+</svg>

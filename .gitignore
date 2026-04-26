@@ -36,3 +36,16 @@ artifacts/
 
 # Frontend dependencies
 node_modules/
+
+# Training & eval outputs (model weights, logs, cached results — keep on disk only)
+dispatch_arena/scripts/_grpo_normal_out/
+dispatch_arena/scripts/_grpo_smoke_out/
+dispatch_arena/scripts/_eval_out/
+
+# Model adapter / weight files (use HF Hub for distribution instead)
+*.safetensors
+*.bin
+final_lora/
+
+# HF cache, in case it ends up inside the repo
+.huggingface/

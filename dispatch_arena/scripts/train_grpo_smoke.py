@@ -22,7 +22,7 @@ from trl import GRPOConfig, GRPOTrainer
 from dispatch_arena.client import DispatchArenaClient
 from dispatch_arena.server.app import run_local_server_in_thread
 
-MODEL_NAME = "Qwen/Qwen3-0.6B"
+MODEL_NAME = "Qwen/Qwen2.5-3B-Instruct"
 SEEDS = [7, 11, 13, 17]
 SYSTEM_PROMPT = (
     "You are a courier dispatcher controlling one courier delivering one order in a "
@@ -124,16 +124,11 @@ class DispatchToolEnv:
 
 
 def reward_total(environments: List[DispatchToolEnv], **_: Any) -> List[float]:
+    # Sum of the env's per-step RewardBreakdown.total_reward over the rollout.
+    # Already includes step_cost, progress, success, invalid_penalty, on-time
+    # bonus, and timeout — so reward_validity / reward_delivery would be
+    # double-counts of components inside this scalar.
     return [float(env.metrics.get("step_total", 0.0)) for env in environments]
-
-
-def reward_validity(environments: List[DispatchToolEnv], **_: Any) -> List[float]:
-    # Penalize each invalid call, mirror the env's invalid penalty magnitude.
-    return [-1.0 * float(env.metrics.get("invalid_count", 0)) for env in environments]
-
-
-def reward_delivery(environments: List[DispatchToolEnv], **_: Any) -> List[float]:
-    return [float(env.metrics.get("delivered", 0)) for env in environments]
 
 
 def main() -> None:
@@ -164,18 +159,20 @@ def main() -> None:
         max_steps=2,
         beta=0.0,                   # no KL → skips reference model
         log_completions=True,
-        report_to=[],
+        report_to=["tensorboard"],
+        logging_dir="dispatch_arena/scripts/_grpo_smoke_out/tb",
         save_strategy="no",
         eval_strategy="no",
         logging_steps=1,
         bf16=False,
         fp16=True,
+        gradient_checkpointing=True,  # 3B in fp16 + AdamW won't fit on 24GB without this
         model_init_kwargs={"torch_dtype": "float16"},
     )
 
     trainer = GRPOTrainer(
         model=MODEL_NAME,
-        reward_funcs=[reward_total, reward_validity, reward_delivery],
+        reward_funcs=[reward_total],
         args=config,
         train_dataset=train_dataset,
         environment_factory=DispatchToolEnv,
